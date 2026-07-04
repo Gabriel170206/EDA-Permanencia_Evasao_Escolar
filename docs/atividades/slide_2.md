@@ -65,4 +65,4 @@ As informações geradas pelas saídas do sistema serão consumidas pelos seguin
 * **Uma saída importante é:** Painel de indicadores (Dashboard) com alertas automáticos de estudantes em situação de risco.
 
 ## Observações
-* **Uma coisa que ainda ficou confusa:** Como padronizar o registro das intervenções humanas (atendimentos e visitas) para que o sistema consiga gerar métricas precisas sobre a eficácia de cada ação?
+* **Uma coisa que ainda ficou confusa:** Como padronizar o registro das intervenções humanas (atendimentos e visitas) para que o sistema consiga gerar medidas precisas sobre a eficácia de cada ação?
