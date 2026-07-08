@@ -228,28 +228,185 @@ Apoiar gestores, professores e equipes multidisciplinares a identificar precocem
 
 # 5. Espaço Reservado para Próximas Etapas
 
-As seções abaixo serão preenchidas nas próximas aulas. Por enquanto, deixem apenas os títulos.
-
 ## 5.1 Atores do sistema
 
-[preencher nas próximas aulas]
+| Ator | Descrição | Papel no sistema |
+|---|---|---|
+| Gestor Escolar | Responsável pela gestão institucional e tomada de decisões estratégicas | Visualiza painéis e relatórios gerenciais, define critérios de alerta e acompanha indicadores gerais de permanência |
+| Coordenador Pedagógico | Responsável pelo acompanhamento pedagógico dos estudantes | Consulta alertas de risco, acompanha histórico de intervenções e orienta ações com professores |
+| Professor | Responsável pelo registro de frequência, notas e ocorrências em sala de aula | Alimenta o sistema com dados acadêmicos e disciplinares |
+| Assistente Social / Psicólogo Escolar | Profissional de apoio que atua em situações de vulnerabilidade | Registra e acompanha atendimentos, visualiza casos com indicadores sociais e emocionais |
+| Secretaria da Instituição | Responsável pelos registros administrativos e cadastrais | Cadastra e mantém dados de estudantes, turmas e cursos |
+| Responsável pelo Estudante | Familiar ou responsável legal do estudante | Acessa informações restritas sobre frequência, desempenho e evolução do estudante |
+| Sistema (Ator não humano) | Módulo automatizado de processamento e análise de dados | Executa a identificação de padrões de risco, gera alertas automáticos e processa os dados recebidos |
+
+---
 
 ## 5.2 Casos de uso
 
-[preencher nas próximas aulas]
+| ID | Caso de Uso | Ator principal | Descrição resumida |
+|---|---|---|---|
+| UC01 | Cadastrar estudante | Secretaria | Registrar um novo estudante no sistema com dados pessoais, matrícula e turma |
+| UC02 | Registrar frequência | Professor | Lançar a frequência diária ou semanal dos estudantes por disciplina |
+| UC03 | Registrar notas | Professor | Lançar notas de avaliações por disciplina e período letivo |
+| UC04 | Registrar ocorrência disciplinar | Professor / Coordenação | Registrar ocorrências como advertências, suspensões ou outros eventos disciplinares |
+| UC05 | Registrar intervenção | Coordenação / Assistente Social | Registrar ações realizadas para apoiar o estudante em risco (reuniões, encaminhamentos, etc.) |
+| UC06 | Visualizar painel de indicadores | Gestor / Coordenação | Visualizar um painel com indicadores como alunos em risco, frequência média, desempenho e evolução mensal |
+| UC07 | Gerar relatório | Gestor / Coordenação | Gerar relatórios com dados de frequência, notas, ocorrências e intervenções |
+| UC08 | Emitir alerta automático | Sistema | Identificar estudantes que atingiram os critérios de risco e emitir alerta para a coordenação |
+| UC09 | Configurar critérios de alerta | Gestor / Coordenação | Definir ou ajustar os parâmetros que disparam os alertas de risco |
+| UC10 | Acompanhar evolução do caso | Coordenação / Assistente Social | Visualizar o histórico de intervenções e a evolução dos indicadores do estudante |
+| UC11 | Controlar acesso | Sistema | Gerenciar perfis de usuário e permissões de acesso conforme o papel de cada ator |
+| UC12 | Importar dados CSV | Secretaria | Importar arquivos CSV com dados de estudantes, frequência e notas |
+
+---
 
 ## 5.3 Descrição detalhada dos casos de uso
 
-[preencher nas próximas aulas]
+### UC01 — Cadastrar estudante
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Secretaria |
+| *Pré-condições* | O ator está autenticado com perfil de acesso permitido. |
+| *Fluxo principal* | 1. O ator acessa a tela de cadastro de estudante. 2. Preenche os campos obrigatórios (nome, matrícula, turma, curso, contato). 3. Confirma o cadastro. 4. O sistema valida os dados e salva o registro. 5. O sistema exibe mensagem de confirmação. |
+| *Fluxo alternativo* | Se algum campo obrigatório estiver vazio, o sistema exibe mensagem de erro e solicita o preenchimento. |
+| *Pós-condições* | O estudante é cadastrado no sistema e pode ser vinculado a registros de frequência, notas e ocorrências. |
+| *Regras de negócio* | CPF e matrícula devem ser únicos no sistema. |
+
+---
+
+### UC02 — Registrar frequência
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Professor |
+| *Pré-condições* | O professor está autenticado e possui turmas vinculadas ao seu perfil. |
+| *Fluxo principal* | 1. O ator seleciona a turma e a disciplina. 2. Seleciona a data ou período. 3. Registra a frequência de cada estudante (presente/ausente). 4. Confirma o lançamento. 5. O sistema armazena os dados e atualiza o histórico do estudante. |
+| *Pós-condições* | A frequência é registrada e passa a compor os indicadores de risco do estudante. |
+
+---
+
+### UC03 — Registrar notas
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Professor |
+| *Pré-condições* | O professor está autenticado e possui turmas vinculadas ao seu perfil. |
+| *Fluxo principal* | 1. O ator seleciona a turma e a disciplina. 2. Seleciona a avaliação (bimestre, trimestre, etc.). 3. Lança as notas de cada estudante. 4. Confirma o lançamento. 5. O sistema armazena os dados e atualiza o histórico do estudante. |
+| *Pós-condições* | As notas são registradas e passam a compor os indicadores de risco do estudante. |
+
+---
+
+### UC04 — Registrar ocorrência disciplinar
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Professor / Coordenação |
+| *Pré-condições* | O ator está autenticado com perfil de acesso permitido. |
+| *Fluxo principal* | 1. O ator busca o estudante. 2. Acessa o registro de ocorrências. 3. Preenche os campos (tipo de ocorrência, data, descrição, responsável). 4. Confirma o registro. 5. O sistema salva a ocorrência e a vincula ao histórico do estudante. |
+| *Pós-condições* | A ocorrência é registrada e fica disponível para consulta em relatórios e indicadores. |
+
+---
+
+### UC05 — Registrar intervenção
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Coordenação / Assistente Social |
+| *Pré-condições* | O ator está autenticado com perfil de acesso permitido. |
+| *Fluxo principal* | 1. O ator busca o estudante. 2. Acessa o registro de intervenções. 3. Preenche os campos (tipo de intervenção, data, descrição, responsável, resultado esperado). 4. Confirma o registro. 5. O sistema salva a intervenção e a vincula ao histórico do estudante. |
+| *Pós-condições* | A intervenção é registrada e passa a compor o histórico de acompanhamento do estudante. |
+
+---
+
+### UC06 — Visualizar painel de indicadores
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Gestor / Coordenação |
+| *Pré-condições* | O ator está autenticado com perfil de acesso permitido. |
+| *Fluxo principal* | 1. O ator acessa o painel principal. 2. O sistema exibe os indicadores (alunos em risco, frequência média, desempenho, evolução mensal). 3. O ator pode aplicar filtros (curso, turma, período). 4. O sistema atualiza os dados conforme os filtros aplicados. |
+| *Regras de negócio* | Os dados exibidos não devem conter identificadores diretos (nome, matrícula, CPF) — conforme RNF002. |
+
+---
+
+### UC07 — Gerar relatório
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Gestor / Coordenação |
+| *Pré-condições* | O ator está autenticado com perfil de acesso permitido. |
+| *Fluxo principal* | 1. O ator acessa a tela de relatórios. 2. Seleciona o tipo de relatório (risco, frequência, desempenho, intervenções). 3. Aplica filtros (período, turma, curso). 4. O sistema gera o relatório e exibe para visualização ou exportação. |
+| *Pós-condições* | O relatório é gerado e pode ser exportado em formato PDF ou CSV. |
+
+---
+
+### UC08 — Emitir alerta automático
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Sistema (ator não humano) |
+| *Pré-condições* | O sistema possui dados de frequência, notas e ocorrências atualizados. |
+| *Fluxo principal* | 1. O sistema executa a rotina de verificação de risco (diária ou semanal). 2. Identifica estudantes que atingiram os critérios configurados. 3. Gera alertas para a coordenação e gestores. 4. Registra o alerta no histórico do estudante. |
+| *Fluxo alternativo* | Se nenhum estudante atingir os critérios, o sistema não gera alertas. |
+| *Regras de negócio* | Os critérios de alerta são configuráveis (RN002). O alerta é uma hipótese até validação humana (RNF007). |
+
+---
+
+### UC09 — Configurar critérios de alerta
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Gestor / Coordenação |
+| *Pré-condições* | O ator está autenticado com perfil de acesso permitido. |
+| *Fluxo principal* | 1. O ator acessa a tela de configuração de alertas. 2. Define ou ajusta os parâmetros (ex: frequência mínima, quantidade de notas baixas, etc.). 3. Confirma as alterações. 4. O sistema valida e salva as novas configurações. |
+| *Pós-condições* | Os novos critérios passam a ser aplicados nas próximas execuções da rotina de alerta. |
+
+---
+
+### UC10 — Acompanhar evolução do caso
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Coordenação / Assistente Social |
+| *Pré-condições* | O ator está autenticado com perfil de acesso permitido. |
+| *Fluxo principal* | 1. O ator busca o estudante. 2. Acessa o histórico do estudante. 3. Visualiza a evolução dos indicadores (frequência, notas, ocorrências, intervenções). 4. O sistema exibe os dados organizados em linha do tempo. |
+| *Pós-condições* | O ator tem uma visão consolidada do acompanhamento do estudante. |
+
+---
+
+### UC11 — Controlar acesso
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Sistema |
+| *Pré-condições* | O usuário está autenticado. |
+| *Fluxo principal* | 1. O sistema identifica o perfil do usuário autenticado. 2. Libera ou restringe o acesso a funcionalidades conforme o nível de permissão. 3. Registra logs de acesso e ações realizadas (RNF004). |
+| *Regras de negócio* | Cada perfil (gestor, coordenação, professor, responsável) tem níveis de acesso distintos. |
+
+---
+
+### UC12 — Importar dados CSV
+
+| Elemento | Descrição |
+|---|---|
+| *Ator principal* | Secretaria |
+| *Pré-condições* | O ator está autenticado com perfil de acesso permitido. |
+| *Fluxo principal* | 1. O ator acessa a tela de importação. 2. Seleciona o tipo de dado (estudantes, frequência, notas). 3. Seleciona o arquivo CSV. 4. O sistema valida o formato e processa os dados. 5. O sistema exibe mensagem de confirmação. |
+| *Fluxo alternativo* | Se o arquivo estiver com formato inválido, o sistema exibe mensagem de erro. |
+| *Pós-condições* | Os dados são importados e integrados ao sistema. |
+
+---
 
 ## 5.4 Diagramas
 
 | Diagrama | Status | Arquivo previsto |
 |---|---|---|
-| Diagrama de casos de uso | Pendente | `diagramas/casos_de_uso.puml` |
-| Diagrama de atividades | Pendente | `diagramas/atividades.puml` |
-| Diagrama de classes | Pendente | `diagramas/classes.puml` |
-| Diagrama de sequência | Pendente | `diagramas/sequencia.puml` |
+| Diagrama de casos de uso | Pendente | diagramas/casos_de_uso.puml |
+| Diagrama de atividades | Pendente | diagramas/atividades.puml |
+| Diagrama de classes | Pendente | diagramas/classes.puml |
+| Diagrama de sequência | Pendente | diagramas/sequencia.puml |
 
 ---
 
