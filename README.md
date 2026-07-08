@@ -10,131 +10,104 @@ Este repositório contém a modelagem e o desenvolvimento do **SIMPE**, uma plat
 
 ### O Problema e o Impacto no Território
 
-A evasão escolar é um problema multidimensional e cumulativo que afeta diretamente o desenvolvimento socioeconômico regional. O abandono dos estudos não acontece de forma repentina; ele é precedido por sinais claros, como faltas frequentes, queda acentuada de rendimento, desmotivação e dificuldades de aprendizagem.
+A evasão escolar é um problema que afeta diretamente o desenvolvimento socioeconômico regional. O abandono dos estudos não acontece de forma repentina; ele é precedido por sinais claros, como faltas frequentes, queda acentuada de rendimento, desmotivação e dificuldades de aprendizagem.
 
 No território social e econômico, o impacto se desdobra em diversas camadas:
 
 * **Estudantes e Famílias:** Diminuição da qualificação profissional, aumento da vulnerabilidade social e interrupção de projetos de ascensão social.
-* **Instituições de Ensino e Professores:** Dificuldades pedagógicas devido à rotatividade, frustração profissional e piora nos indicadores institucionais que afetam avaliações governamentais.
+* **Instituições de Ensino e Professores:** DFrustração profissional e piora nos indicadores institucionais que afetam avaliações governamentais.
 * **Governo e Sociedade:** Desperdício de recursos públicos investidos na educação básica/técnica, aumento da demanda por programas sociais e políticas compensatórias, redução da produtividade econômica e ampliação das desigualdades sociais.
 
 ### Solução Proposta
 
-O **SIMPE** atua como uma ferramenta estratégica de apoio à decisão humana. Ele centraliza dados de frequência, notas e ocorrências para identificar precocemente estudantes em risco e emitir alertas automáticos configuráveis para a equipe multidisciplinar (gestores, pedagogos, psicólogos e assistentes sociais), viabilizando intervenções rápidas e eficazes antes que o abandono se consume.
+O **SIMPE** atua como uma ferramenta estratégica de apoio à decisão humana. Ele centraliza dados de frequência, notas e ocorrências para identificar com antencedência estudantes em risco de evasão e emitir alertas automáticos configuráveis para a equipe multidisciplinar (gestores, pedagogos, psicólogos e assistentes sociais), viabilizando intervenções rápidas e eficazes antes que o abandono ocorra.
 
 > **Frase Guia do Projeto:**
-> Apoiar gestores, professores e equipes multidisciplinares a identificar precocemente estudantes em risco de evasão e organizar intervenções para aumentar a taxa de permanência e conclusão escolar, reduzindo as desigualdades sociais e fortalecendo o desenvolvimento educacional.
+> Apoiar gestores, professores e equipes multidisciplinares a identificar com antencedência estudantes em risco de evasão e organizar intervenções para aumentar a taxa de permanência e conclusão escolar, reduzindo as desigualdades sociais e fortalecendo o desenvolvimento educacional.
 
 ---
 
 ## 2. Estrutura do Repositório
 
-Organização de pastas padronizada para facilitar a navegação de desenvolvedores humanos e a leitura contextual por agentes de Inteligência Artificial (IA):
-
 ```text
-simpe-project/
-├── .github/                  # Templates de Pull Request, Issues e Workflows de CI/CD
-├── backend/                  # API RESTful (Lógica de negócios e regras de alertas)
-│   ├── src/                  # Camadas do Sistema (Controllers, Services, Repositories, Models)
-│   ├── config/               # Configurações de segurança (JWT/OAuth 2.0) e LGPD
-│   └── pom.xml / package.json
-├── frontend/                 # Interface Web Responsiva e Acessível (React)
-│   ├── src/                  # Componentes, Páginas, Hooks e Contextos de Acessibilidade
-│   └── package.json
-├── database/                 # Modelagem e evolução do Banco de Dados
-│   ├── migrations/           # Scripts SQL (PostgreSQL) para versionamento de tabelas
-│   └── seeds/                # Dados populacionais iniciais para testes de ambiente
-└── docs/                     # Documentação de Engenharia e Modelagem de Sistemas
-    ├── canvas/               # Canvas de Delimitação do Projeto
-    └── requisitos/           # Detalhamento de Requisitos Funcionais e Não Funcionais
-
+EDA-Permanencia_Evasao/
+├── data/                     # Dados brutos e processados para análise
+│   └── (arquivos de dados)
+├── diagrams/                 # Diagramas do projeto (arquitetura, fluxos, etc.)
+│   └── (diagramas em formato .png, .drawio, etc.)
+├── docs/                     # Documentação geral do projeto
+│   └── (documentos, manuais, atividades)
+├── outputs/                  # Resultados gerados pelas análises
+│   └── (relatórios, gráficos, tabelas, etc.)
+├── src/                      # Código-fonte principal do projeto
+│   └── (fontes.)
+├── tests/                    # Testes automatizados
+│   └── (scripts de teste, fixtures)
+└── README.md                 # Documentação principal do projeto
 ```
 
 ---
 
-## 3. Como Executar
+## 3. Certifique-se de ter instalado em seu ambiente local:
 
-### Pré-requisitos Técnicos
-
-Antes de iniciar, certifique-se de ter instalado em seu ambiente local:
-
-* **Runtime:** Node.js (v18+) ou Java JDK 17 (dependendo do ambiente backend escolhido).
-* **Banco de Dados:** PostgreSQL (v14 ou superior).
-* **Gerenciador de Dependências:** NPM ou Maven.
 
 ### Passo a Passo para Inicialização
 
 #### 1. Clonar o Repositório e Configurar o Banco de Dados
 
 ```bash
+* Abra sua pasta local onde trabalará com o projeto
+* Abra o teminal e entre no diretório da pasta onde trabalhará com o projeto
+* Execute o comando abaixo para clonar o projeto inteiro de "SIMPE — Sistema Inteligente de Monitoramento da Permanência Escolar":
 git clone https://github.com/seu-usuario/simpe.git
-cd simpe
 
 ```
-
-* Crie um banco de dados PostgreSQL chamado `simpe_db`.
-* Execute as migrações contidas na pasta `/database/migrations/` para estruturar as tabelas relacionais de alunos, frequência, responsáveis e alertas.
-
-#### 2. Executar o Backend
-
-Navegue até a pasta do servidor e configure o arquivo de propriedades/ambiente (`.env` ou `application.properties`) com as credenciais do banco e chaves criptográficas.
-
-```bash
-cd backend
-npm install   # Caso use Node.js
-npm run dev
-
-```
-
-#### 3. Executar o Frontend
-
-Em um novo terminal, inicialize o servidor de desenvolvimento da interface React:
-
-```bash
-cd frontend
-npm install
-npm start
-
-```
-
-A aplicação estará disponível em `http://localhost:3000`.
-
----
 
 ## 4. Como Contribuir
 
-Para manter a consistência do código, a conformidade com a LGPD e a segurança dos dados educacionais, siga as diretrizes abaixo:
+### Certificação de Arquivos
 
-### Política de Branches (Git Flow)
+Antes de adicionar ou modificar qualquer arquivo no repositório, siga estas regras simples:
 
-* `main`: Código estável homologado em produção.
-* `develop`: Integração contínua de novas funcionalidades prontas para teste.
-* `feature/*`: Desenvolvimento de novos requisitos (ex: `feature/alerta-frequencia`).
-* `hotfix/*`: Correções críticas imediatas feitas a partir da `main`.
+1. **Verifique dados sensíveis**: Nunca commit arquivos com:
+   - Nomes, CPF ou dados pessoais de alunos
+   - Senhas, chaves de API ou credenciais
+   - Informações que possam identificar pessoas
 
-### Regras de Pull Request (PR)
+2. **Anonimize os dados**: Se for usar dados reais, remova ou ofusque informações que identifiquem indivíduos.
 
-1. Crie uma branch específica a partir da `develop`.
-2. Garanta que novas implementações de formulários incluam atributos de acessibilidade (leitores de tela e navegação por teclado).
-3. Nunca insira chaves de API ou credenciais de banco hardcoded; utilize o gerenciador de variáveis de ambiente.
-4. Abra o PR para a branch `develop`, descrevendo as alterações realizadas e vinculando-o à respectiva Issue. Todo PR exige revisão e aprovação de código (Code Review).
+3. **Revise antes de commitar**: Confira se o arquivo está correto e se não contém informações indevidas.
 
+### Checklist Rápido
+
+- [ ] Dados anonimizados?
+- [ ] Sem credenciais ou senhas?
+- [ ] Origem documentada?
+- [ ] Revisão realizada?
+
+**Dúvidas?** Consulte a equipe antes de fazer o commit.
 ---
 
 ## 5. Licença e Créditos
 
-### Autoria e Contexto
+### Autoria
 
-Este repositório e sua respectiva modelagem de sistemas foram desenvolvidos como produto de engenharia de software da **Atividade em Grupo – Trilha EDA/Permanência** focada no combate à Evasão Escolar.
+Este projeto foi desenvolvido como parte da **Atividade em Grupo – Trilha EDA/Permanência**, com foco no combate à Evasão Escolar.
 
-* **Equipe de Desenvolvimento:** Alunos da Trilha de TI.
-* **Data do Planejamento:** Quinta-feira, 02 de Julho de 2026.
+**Equipe de Desenvolvimento:**
+- Gabriel Rodrigues
+- Marcus Antônio
+- Ryan Corrêa 
+- Pedro Eduardo
+
+**Orientação:** Thales
+
+**Data do Planejamento:** 02 de Julho de 2026
 
 ### Fontes de Dados e Referências
 
-* Critérios analíticos baseados em indicadores clássicos de evasão (frequência regulamentar e rendimento escolar).
-* Regras de privacidade e níveis de acesso projetadas estritamente em conformidade com a **Lei Geral de Proteção de Dados (LGPD)**.
+- Indicadores de evasão baseados em frequência e rendimento escolar
+- Conformidade com a **Lei Geral de Proteção de Dados (LGPD)**
 
 ### Licença
-
-Este projeto é licenciado sob a **Licença MIT** - consulte o arquivo `LICENSE` para obter mais detalhes.
+Este projeto está sob a **Licença MIT** - consulte o arquivo `LICENSE` para mais informações.
