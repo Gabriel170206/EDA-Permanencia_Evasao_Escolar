@@ -1,3 +1,4 @@
+
 <!--
 INSTRUÇÕES GERAIS AO GRUPO
 1. Substituam todos os campos entre [colchetes].
@@ -12,11 +13,11 @@ INSTRUÇÕES GERAIS AO GRUPO
 **Instituição:** Instituto Federal do Maranhão — Campus Itapecuru-Mirim  
 **Disciplina:** Modelagem de Sistemas com IA Generativa  
 **Professor:** Prof. Dr. Thales Levi Azevedo Valente  
-**Turma:** [INFO200-SUBSEQUENTE]  
-**Grupo:** [Gabriel Rodrigues, Pedro Eduardo, Marcus Antônio, Ryan Corrêa]  
+**Turma:** Técnico Subsequente  
+**Grupo:** Gabriel Rodrigues, Marcus Antônio, Ryan Corrêa, Pedro Eduardo  
 **Trilha:** EDA e Permanência Estudantil  
-**Nome do projeto:** Sistema Inteligente de Monitoramento da Permanência Escolar (SIMPE)  
-**Data:** 02/07/2026  
+**Nome do projeto:** SIMPE - Sistema Inteligente de Monitoramento da Permanência Escolar  
+**Data:** 08/07/2026  
 **Versão:** D0  
 
 ---
@@ -25,7 +26,7 @@ INSTRUÇÕES GERAIS AO GRUPO
 
 | Versão | Data | Responsáveis | Descrição da alteração |
 |---|---|---|---|
-| D0 | 02/07/2026 | Gabriel Rodrigues, Pedro Eduardo, Marcus Antônio, Ryan Corrêa | Primeira versão com visão do projeto e requisitos iniciais. |
+| D0 | 02/07/2026 | Marcus, Gabriel, Ryan, Pedro | Primeira versão com visão do projeto e requisitos iniciais. |
 
 ---
 
@@ -44,20 +45,20 @@ INSTRUÇÕES GERAIS AO GRUPO
 
 ## 1.1 Finalidade do documento
 
-Este documento apresenta a versão inicial da visão e dos requisitos do projeto **Sistema Inteligente de Monitoramento da Permanência Escolar (SIMPE)**.  
+Este documento apresenta a versão inicial da visão e dos requisitos do projeto SIMPE - Sistema Inteligente de Monitoramento da Permanência Escolar.  
 Ele registra o problema real investigado, o objetivo do sistema, os stakeholders, o escopo inicial, os requisitos levantados até o momento e as pendências que ainda precisam de validação.
 
 ## 1.2 Fontes usadas para elaborar esta versão
 
 | Fonte ou atividade | O que foi aproveitado no documento |
 |---|---|
-| Aula 1 — Problema real e trilha | Definição do tema evasão escolar e da trilha EDA/Permanência. |
-| Aula 2 — Entrada, processamento e saída | Identificação das entradas, como frequência, notas e registros de acompanhamento. |
-| Aula 4 — Uso de IA e log | Registro do uso da IA para organização e revisão do conteúdo. |
-| Aula 5 — Stakeholders, objetivo, escopo e 5W1H | Definição dos stakeholders, do objetivo do sistema, do escopo inicial e do canvas de delimitação do projeto. |
-| Aula 6 — Plano de coleta e ética | Considerações sobre privacidade, segurança e tratamento dos dados conforme a LGPD. |
-| Aula 8 — Primeira lista rastreável | Primeiros requisitos funcionais e não funcionais escritos a partir dos achados. |
-| Aula 9 — Documento de Visão e Documento de Requisitos | Estruturação do documento de visão e dos requisitos iniciais. |
+| Aula 1 — Problema real e trilha | Definição da trilha EDA/Permanência e identificação do problema da evasão escolar |
+| Aula 2 — Entrada, processamento e saída | Mapeamento do fluxo IPO do sistema SIMPE |
+| Aula 4 — Uso de IA e log | Registro do uso da IA e validações realizadas |
+| Aula 5 — Stakeholders, objetivo, escopo e 5W1H | Identificação de stakeholders, objetivo, escopo e perguntas 5W1H |
+| Aula 6 — Plano de coleta e ética | Roteiro de perguntas e plano de coleta com cuidados éticos |
+| Aula 8 — Primeira lista rastreável | RFs, RNFs, regras de negócio e critérios de aceitação |
+| Aula 9 — Documento de Visão e Documento de Requisitos | Organização final da visão e requisitos em documento único |
 
 ---
 
@@ -67,88 +68,110 @@ Ele registra o problema real investigado, o objetivo do sistema, os stakeholders
 
 | Campo | Preenchimento |
 |---|---|
-| Nome do projeto | Sistema Inteligente de Monitoramento da Permanência Escolar (SIMPE) |
+| Nome do projeto | SIMPE - Sistema Inteligente de Monitoramento da Permanência Escolar |
 | Trilha escolhida | EDA e Permanência Estudantil |
-| Problema central | A evasão escolar, entendida não apenas como abandono dos estudos, mas como resultado de fatores que se acumulam ao longo da vida acadêmica do estudante. |
-| Público principal | Estudantes em risco de evasão, gestores escolares, coordenação pedagógica, professores, assistentes sociais, psicólogos escolares, secretaria da instituição e responsáveis pelos estudantes. |
-| Produto esperado | Um sistema inteligente de monitoramento da permanência escolar que identifique precocemente estudantes em risco de evasão e auxilie intervenções. |
+| Problema central | Dificuldade em identificar, em tempo suficiente, padrões de risco de evasão escolar para intervenção pedagógica |
+| Público principal | Gestores pedagógicos, professores, equipe de assistência estudantil e coordenação |
+| Produto esperado | Dashboard com gráficos, indicadores, alertas automáticos e relatórios EDA |
 
 ## 2.2 Problema real
 
+Descreva o problema real que motivou o projeto. O problema deve estar ligado a pessoas, comunidade, escola, território ou gestão.
+
 **Problema real identificado:**  
-A evasão escolar. Em muitos casos, o aluno não deixa a escola de forma repentina; antes disso, apresenta sinais como faltas frequentes, baixo rendimento, desmotivação, dificuldades de aprendizagem e pouco envolvimento com as atividades escolares. Muitos estudantes precisam conciliar os estudos com o trabalho para complementar a renda familiar. Outras questões como violência, gravidez precoce, problemas de saúde mental, bullying e falta de transporte dificultam a permanência na escola.
+O principal problema identificado é a evasão escolar, que ocorre quando os alunos deixam de frequentar a escola antes de concluir seus estudos. A dificuldade em identificar, em tempo suficiente, padrões de risco de evasão escolar impede intervenções pedagógicas precoces e efetivas.
 
 **Quem é afetado pelo problema:**  
-Os principais afetados são os próprios estudantes. As famílias, os professores, as instituições de ensino, o governo, o mercado de trabalho e a sociedade também são afetados.
+Estudantes, familiares, professores, gestores escolares e a sociedade.
 
 **Por que o problema importa:**  
-A evasão escolar reduz as oportunidades de qualificação profissional, aumenta a vulnerabilidade social, compromete o desenvolvimento econômico e social e limita o exercício pleno da cidadania.
+É importante reduzir a evasão para aumentar as oportunidades de emprego, melhorar a qualidade de vida e diminuir problemas sociais, como desemprego e desigualdade.
 
 ## 2.3 Justificativa
 
+Explique por que vale a pena construir ou modelar esse sistema.
+
 **Justificativa:**  
-Combater a evasão escolar significa investir no desenvolvimento sustentável da sociedade. O sistema pode apoiar gestores, professores e equipes multidisciplinares a identificar precocemente estudantes em risco e organizar intervenções mais rápidas e eficientes.
+O projeto é importante porque transforma informações dispersas em conhecimento organizado, ajudando estudantes, professores, gestores e equipes multidisciplinares a compreender melhor o problema da evasão e tomar decisões com mais responsabilidade, promovendo a permanência estudantil e reduzindo desigualdades sociais.
 
 ## 2.4 Objetivo do sistema
 
+Use a estrutura:
+
+> Apoiar **[público]** a **[ação]** para **[resultado]**.
+
 **Objetivo geral:**  
-Apoiar gestores, professores e equipes multidisciplinares a identificar precocemente estudantes em risco de evasão e organizar intervenções para aumentar a taxa de permanência e conclusão escolar, reduzindo as desigualdades sociais e fortalecendo o desenvolvimento educacional.
+Apoiar **gestores, professores e equipes multidisciplinares** a **identificar precocemente estudantes em risco de evasão e organizar intervenções** para **aumentar a taxa de permanência e conclusão escolar, reduzindo as desigualdades sociais e fortalecendo o desenvolvimento educacional.**
 
 ## 2.5 Stakeholders
 
 | Tipo | Stakeholder | Interesse ou necessidade | Relação com o sistema |
 |---|---|---|---|
-| Usuário direto | Gestores escolares | Identificar estudantes em risco e apoiar decisões institucionais | Utilizam o sistema para acompanhar indicadores e acompanhar intervenções |
-| Usuário direto | Coordenação pedagógica | Acompanhar estudantes em risco e orientar ações pedagógicas | Utiliza o sistema para consultar alertas, relatórios e histórico de acompanhamento |
-| Usuário direto | Professores | Registrar frequência, notas e ocorrências | Alimentam o sistema com dados acadêmicos e disciplinares |
-| Usuário direto | Assistentes sociais e psicólogos escolares | Acompanhar situações de vulnerabilidade e apoiar intervenções | Utilizam o sistema para registrar e acompanhar atendimentos |
-| Fornecedor de dados | Secretaria da instituição | Organizar cadastros e registros acadêmicos | Fornece dados de estudantes, turmas e registros administrativos |
-| Validador | Gestores e coordenação pedagógica | Validar alertas e decisões de intervenção | Avaliam os dados e orientam as ações a serem realizadas |
-| Impactado | Estudantes | Permanecer na escola e concluir sua formação | São afetados pelas decisões e intervenções apoiadas pelo sistema |
-| Impactado | Responsáveis pelos estudantes | Acompanhar a permanência e o desenvolvimento escolar | Acessam informações restritas sobre o estudante |
+| Usuário direto | Gestores Escolares | Utilizar relatórios e dashboards para decisões estratégicas | Acessa o sistema para consultar indicadores e gerar relatórios |
+| Usuário direto | Coordenação Pedagógica | Receber alertas e planejar intervenções | Recebe notificações e registra ações |
+| Usuário direto | Professores | Alimentar e consultar dados de frequência e notas | Lança frequência, notas e consulta histórico dos alunos |
+| Usuário direto | Assistentes Sociais e Psicólogos | Registrar e acompanhar intervenções | Registra atendimentos e visitas |
+| Fornecedor de dados | Secretaria da Instituição | Fornecer dados cadastrais dos alunos | Envia dados de matrícula e turmas |
+| Validador | Direção e Gestão Escolar | Validar decisões baseadas em dados | Aprova políticas de permanência |
+| Gestor ou responsável | Coordenação Pedagógica | Planejar ações de combate à evasão | Define limites e critérios de risco |
+| Impactado | Estudantes | Ter seus dados protegidos e receber apoio | São beneficiários finais do sistema |
+| Impactado | Responsáveis pelos Estudantes | Acompanhar frequência e rendimento | Acessam notificações restritas |
+| Impactado | Sociedade em geral | Ser impactada pelos indicadores sociais | Utiliza relatórios agregados |
 
 ## 2.6 Sistema como transformação
 
+Descreva o sistema usando a lógica entrada → processamento → saída.
+
 | Elemento | Descrição |
 |---|---|
-| Entradas | Dados do estudante, turma, frequência, notas, ocorrências disciplinares, histórico escolar, registros de acompanhamento e intervenções. |
-| Processamento | Organizar os dados, identificar padrões de risco, emitir alertas automáticos, registrar intervenções e acompanhar evolução dos casos. |
-| Saídas | Painel com indicadores de evasão, alertas, relatórios, histórico acadêmico e evolução dos casos. |
-| Usuários das saídas | Gestores escolares, coordenação pedagógica, professores, assistentes sociais, psicólogos escolares e responsáveis pelos estudantes. |
+| Entradas | Dados cadastrais do estudante, turma e responsáveis; registros diários de frequência; notas e médias; ocorrências disciplinares; registros de visitas e atendimentos; credenciais de acesso |
+| Processamento | Autenticação e controle de permissões; análise analítica de risco; validação de gatilhos; cálculo de indicadores; atualização da linha do tempo; segurança |
+| Saídas | Painel de indicadores (Dashboard); alertas visuais; histórico escolar consolidado; relatórios gerenciais |
+| Usuários das saídas | Gestores escolares, coordenação pedagógica, professores, equipe multidisciplinar, responsáveis pelos estudantes e formuladores de políticas públicas |
 
 ## 2.7 Escopo inicial
 
+Liste apenas o que será considerado nesta primeira versão.
+
 | ID | Dentro do escopo | Justificativa |
 |---|---|---|
-| E01 | Cadastrar estudantes | É a base para o acompanhamento da permanência escolar. |
-| E02 | Registrar frequência e integrar notas e desempenho acadêmico | Esses dados são fundamentais para identificar sinais de risco. |
-| E03 | Registrar ocorrências disciplinares e intervenções realizadas | Permite acompanhar ações e evolução dos casos. |
-| E04 | Identificar padrões de risco, emitir alertas automáticos e gerar relatórios gerenciais | São as principais funcionalidades de apoio à decisão. |
+| E01 | Cadastro e gestão de dados dos estudantes | Essencial para manter a base de dados do sistema |
+| E02 | Registro de frequência, notas e ocorrências disciplinares | Permite monitorar indicadores de risco |
+| E03 | Identificação de padrões de risco baseada em regras configuráveis | Viabiliza a detecção precoce de evasão |
+| E04 | Geração de alertas e notificações automáticas | Permite intervenção rápida da equipe |
+| E07 | Controle de níveis de acesso e permissões | Garante segurança e conformidade |
+| E08 | Conformidade com a Lei Geral de Proteção de Dados (LGPD) | Protege dados sensíveis dos estudantes |
 
 ## 2.8 Fora do escopo
 
+Liste o que não será feito agora. Isso ajuda a evitar escopo infinito.
+
 | ID | Fora do escopo | Motivo |
 |---|---|---|
-| FE01 | Substituir a análise humana e as ações pedagógicas ou assistenciais | O software apoia a decisão, mas não elimina sozinho a evasão escolar. |
-| FE02 | Identificar sozinho todas as causas da evasão escolar | Situações familiares, emocionais e socioeconômicas muitas vezes não aparecem nos registros acadêmicos. |
-| FE03 | Garantir que todos os alertas sejam totalmente precisos | Alertas automáticos podem gerar falsos positivos ou deixar de identificar casos específicos. |
+| FE01 | Integração em tempo real com sistemas acadêmicos oficiais | Complexidade; fica para versão futura |
+| FE02 | Aplicativo móvel completo | Versão 1.0 será web responsiva |
+| FE05 | Recomendações automáticas de intervenção | Decisões pedagógicas devem ser humanas |
 
 ## 2.9 Fronteira do sistema
 
+Explique onde o sistema começa, onde termina e com quais elementos externos ele interage.
+
 | Elemento externo | O que envia ao sistema | O que recebe do sistema |
 |---|---|---|
-| Professores | Frequência, notas e ocorrências | Alertas, histórico e relatórios de acompanhamento |
-| Secretaria da instituição | Dados cadastrais e registros administrativos | Informações organizadas para gestão e acompanhamento |
-| Coordenação e gestores | Critérios de acompanhamento e decisões de intervenção | Painel de indicadores, relatórios gerenciais e evolução dos casos |
-| Responsáveis pelos estudantes | Solicitações de acompanhamento e acesso restrito | Informações do próprio estudante, com acesso restrito |
+| Professores e Secretaria | Dados de frequência, notas e cadastro de alunos | Confirmação de lançamento e alertas |
+| Equipe Multidisciplinar | Registros de intervenções e ocorrências | Histórico consolidado do aluno |
+| Coordenação e Gestão | Critérios de risco definidos | Dashboards e relatórios gerenciais |
+| Responsáveis pelos estudantes | Não envia dados | Notificações restritas |
 
 ## 2.10 Limites e compromissos do projeto
 
 | Compromisso | Como será respeitado |
 |---|---|
-| Proteger os dados pessoais e educacionais | O sistema deve seguir medidas de segurança, autenticação segura, criptografia, controle de permissões e tratamento conforme a LGPD. |
-| Apoiar a permanência, sem substituir a análise humana | As informações produzidas pelo sistema devem servir como apoio à decisão e não substituir a análise humana realizada por professores, gestores e equipes multiprofissionais. |
-| Usar dados para prevenção e apoio | Os relatórios e alertas devem ser usados para apoiar intervenções e ações de permanência estudantil. |
+| Proteger estudantes — não serão usados nomes, matrículas, CPFs ou qualquer identificador direto nos relatórios | Anonimização rigorosa; relatórios agregados sem identificadores individuais |
+| Respeitar a LGPD — dados sensíveis devem ser tratados com segurança | Controle de permissões; dados protegidos |
+| Alertas devem apoiar, não punir | Alertas são para apoio pedagógico; não geram rankings individuais |
+| Correlação não é causalidade | Todo insight gerado deve ser marcado como hipótese até validação humana |
+| Dependência de qualidade dos dados | Validar entradas; manter dicionário de dados |
 
 ---
 
@@ -156,73 +179,82 @@ Apoiar gestores, professores e equipes multidisciplinares a identificar precocem
 
 ## 3.1 Requisitos funcionais iniciais
 
+Requisitos funcionais descrevem o que o sistema deve fazer. Use a forma:  
+O sistema deve [ação] [objeto/informação].
+
 | ID | Requisito funcional | Ator principal | Prioridade | Fonte ou evidência |
 |---|---|---|---|---|
-| RF001 | O sistema deve cadastrar estudantes com dados como nome, matrícula, turma, curso e informações de contato. | Secretaria | Alta | Requisitos funcionais do sistema |
-| RF002 | O sistema deve registrar frequência, notas e desempenho acadêmico por disciplina. | Professores | Alta | Requisitos funcionais do sistema |
-| RF003 | O sistema deve registrar ocorrências disciplinares e intervenções realizadas com data, descrição e responsável. | Professores/Coordenação | Alta | Requisitos funcionais do sistema |
-| RF004 | O sistema deve identificar padrões de risco e emitir alertas automáticos quando os critérios definidos forem atingidos. | Sistema/Coordenação | Alta | Fluxo básico e funcionalidades principais |
-| RF005 | O sistema deve gerar relatórios e exibir um painel com indicadores como alunos em risco, frequência média, desempenho e evolução mensal. | Gestores/Coordenação | Alta | Relatórios e painel de indicadores |
-| RF006 | O sistema deve controlar níveis de acesso por perfil de usuário (gestor, coordenação, professor e responsável). | Sistema | Alta | Níveis de acesso |
-| RF007 | O sistema deve importar arquivos CSV com dados de estudantes, frequência e notas. | Secretaria | Média | Requisitos funcionais do sistema |
-| RF008 | O sistema deve acompanhar a evolução dos casos registrados, mostrando histórico de intervenções e mudanças nos indicadores. | Coordenação/Gestores | Alta | Fluxo básico |
+| RF001 | O sistema deve permitir o cadastro e gestão de alunos, turmas, professores e responsáveis. | Secretaria | Alta | Aula 2 — Entrada/Processamento/Saída |
+| RF002 | O sistema deve permitir o registro diário de frequência (presença/falta) por aluno e turma. | Professores | Alta | Aula 2 — Entrada/Processamento/Saída |
+| RF003 | O sistema deve permitir o lançamento e consulta de notas e médias por aluno e disciplina. | Professores | Alta | Aula 2 — Entrada/Processamento/Saída |
+| RF004 | O sistema deve emitir um alerta automático quando um aluno acumular 5 ou mais dias consecutivos de falta sem justificativa. | Coordenação | Alta | Fala 1 — Coordenador (Aula 8) |
+| RF005 | O sistema deve permitir visualizar o alerta em forma de notificação na tela e/ou por e-mail. | Coordenação | Alta | Fala 1 — Coordenador (Aula 8) |
+| RF006 | O sistema deve gerar um relatório consolidado mensal que cruze dados de faltas e notas baixas agrupadas por turma. | Gestores | Média | Fala 3 — Gestor (Aula 8) |
+| RF007 | O sistema deve permitir o registro e acompanhamento do histórico de intervenções realizadas com cada aluno. | Equipe Multidisciplinar | Média | Aula 2 — Entrada/Processamento/Saída |
+| RF008 | O sistema deve exibir um dashboard com indicadores de evasão (taxa de evasão, alunos em risco, frequência média). | Gestores | Alta | Aula 2 — Entrada/Processamento/Saída |
+| RF009 | O sistema deve permitir a exportação de relatórios em formatos PDF e CSV. | Gestores | Média | Aula 2 — Entrada/Processamento/Saída |
+| RF010 | O sistema deve controlar níveis de acesso e permissões por perfil de usuário (Gestor, Professor, Coordenador, etc.). | Todos | Alta | Aula 2 — Entrada/Processamento/Saída |
 
 ## 3.2 Requisitos não funcionais iniciais
 
+Requisitos não funcionais descrevem como o sistema deve funcionar ou quais qualidades/restrições ele deve atender.
+
 | ID | Categoria | Requisito não funcional | Como verificar | Prioridade |
 |---|---|---|---|---|
-| RNF001 | Segurança | O sistema deve garantir autenticação segura com criptografia das informações sensíveis. | Validar a criptografia de dados no banco e a complexidade da autenticação. | Alta |
-| RNF002 | Privacidade | Os relatórios e painéis não devem exibir nome, matrícula, CPF ou qualquer identificador direto dos estudantes. | Revisar relatórios e telas geradas e confirmar ausência de dados identificáveis. | Alta |
-| RNF003 | Conformidade | O sistema deve tratar os dados conforme a Lei Geral de Proteção de Dados (LGPD). | Realizar auditoria de conformidade com a LGPD. | Alta |
-| RNF004 | Segurança | O sistema deve controlar permissões e registrar logs de acesso e ações dos usuários. | Testar acessos com diferentes perfis e verificar logs de auditoria. | Alta |
-| RNF005 | Usabilidade | A interface deve ser acessível, compatível com leitores de tela, navegação por teclado e contraste adequado. | Testar com ferramentas de acessibilidade e usuários com necessidades específicas. | Alta |
-| RNF006 | Desempenho | O processamento da base de dados deve ser concluído em no máximo 5 minutos. | Medir tempo de processamento com bases de dados representativas. | Alta |
-| RNF007 | Ética e transparência | Todo insight gerado por IA deve ser marcado como hipótese até validação humana e deve indicar a base usada. | Verificar a rotulagem de insights e a documentação das evidências. | Alta |
+| RNF001 | Desempenho | O sistema deve carregar a lista de alunos em no máximo 5 segundos em conexões de 3G. | Teste com simulação de rede 3G | Alta |
+| RNF002 | Disponibilidade | O sistema deve sincronizar dados automaticamente quando detectar conexão com a internet após período offline. | Testar em modo offline e verificar sincronização | Média |
+| RNF003 | Privacidade | Os relatórios não devem exibir nome, CPF ou qualquer identificador direto do aluno. | Revisar relatório final e confirmar ausência de identificadores | Alta |
+| RNF004 | Ética | As análises não devem gerar ranking individual nem recomendação punitiva. | Revisar dashboards e relatórios | Alta |
+| RNF005 | Usabilidade | A interface deve ser responsiva e funcionar em dispositivos móveis (celular/tablet). | Testar em diferentes tamanhos de tela | Alta |
+| RNF006 | Segurança | O sistema deve proteger dados sensíveis armazenados em banco de dados. | Verificar proteção no banco de dados | Alta |
+| RNF007 | Rastreabilidade | O sistema deve manter registros de acesso para auditoria e conformidade com LGPD. | Verificar registro de logs de acesso | Alta |
 
 ## 3.3 Regras de negócio iniciais
 
+Regras de negócio são normas do domínio. Elas existem mesmo sem o software.
+
 | ID | Regra de negócio | Justificativa | Fonte ou validação |
 |---|---|---|---|
-| RN001 | Um aluno é classificado em "Risco de Evasão" quando sua frequência acumulada é inferior a 75% ou possui mais de 3 notas abaixo de 6.0. | Define critério objetivo para identificação de risco. | Aula 8 — Exemplo EDA/Permanência |
-| RN002 | Os critérios para emissão de alertas devem ser configuráveis pela instituição. | Evita decisões baseadas apenas em um único indicador. | Notificações inteligentes |
-| RN003 | As informações produzidas pelo sistema devem servir como apoio à decisão e não substituir a análise humana. | O software não elimina sozinho a evasão escolar. | Limitações do sistema |
-| RN004 | Resultados de análise não podem ser usados para punição individual de estudantes. | O objetivo do projeto é apoiar permanência, não responsabilizar individualmente. | Aula 8 — Compromisso ético |
-| RN005 | A evasão é caracterizada após 15 dias consecutivos de falta sem justificativa legal. | Define marco temporal para caracterização de evasão. | Aula 8 — Exemplo EDA/Permanência |
-| RN006 | A base de dados utilizada deve ser fictícia ou anonimizada. | Protege a privacidade dos estudantes e cumpre a LGPD. | Aula 8 — Exemplo EDA/Permanência |
-| RN007 | O tratamento dos dados pessoais e educacionais deve respeitar a LGPD. | Os dados tratados pelo sistema são sensíveis e necessitam de proteção adequada. | Segurança e LGPD |
+| RN001 | Um aluno é classificado em "Risco de Evasão" quando sua frequência acumulada é inferior a 75% ou possui mais de 3 faltas consecutivas sem justificativa. | Padroniza a identificação de alunos em risco | Fala 1 — Coordenador (Aula 8) |
+| RN002 | Apenas coordenadores e gestores podem visualizar a lista completa de alunos em risco. | Protege dados sensíveis | Aula 5 — Stakeholders |
+| RN003 | Relatórios consolidados devem ser gerados automaticamente ao fim de cada mês para revisão da política de permanência. | Garante periodicidade na análise | Fala 3 — Gestor (Aula 8) |
+| RN004 | Cada intervenção registrada deve ter: data, descrição, responsável e status (planejada/em andamento/concluída). | Garante rastreabilidade das ações | Aula 2 — Processamento |
+| RN005 | A nota é considerada "baixa" quando inferior a 6,0 (seis) em qualquer disciplina. | Padroniza a identificação de desempenho insuficiente | Aula 8 — Regras de negócio |
 
 ## 3.4 Critérios de aceitação
 
+Use o formato Dado que / Quando / Então para indicar como saber se o requisito foi atendido.
+
 | Requisito relacionado | Dado que | Quando | Então |
 |---|---|---|---|
-| RF001 | o usuário está na tela de cadastro de estudante | ele preenche os campos obrigatórios e confirma o cadastro | o sistema deve salvar o registro e exibir mensagem de confirmação |
-| RF002 | o professor está na tela de registro de frequência e notas | ele seleciona a turma e registra as informações | o sistema deve armazenar os dados e atualizar o histórico do estudante |
-| RF004 | o sistema possui registros de frequência, notas e ocorrências | um estudante atingir os critérios de risco definidos pela instituição | o sistema deve identificar o estudante como em risco e gerar alerta |
-| RF005 | o gestor solicita um relatório ou painel de acompanhamento | o relatório é gerado | o sistema deve exibir indicadores como alunos em risco, frequência e evolução mensal |
-| RNF002 | o gestor solicita um relatório de alunos em risco | o relatório é gerado | o relatório não deve exibir nome, matrícula, CPF ou identificador direto |
-| RF006 | um usuário tenta acessar uma funcionalidade do sistema | ele está autenticado com seu perfil | o sistema deve controlar o acesso de acordo com os níveis de permissão |
+| RF004 | a coordenação está acompanhando as frequências dos alunos | um aluno completar 5 dias seguidos de falta sem justificativa | o sistema deve emitir um alerta em vermelho na tela e enviar notificação imediata para coordenadores cadastrados |
+| RF006 | o mês chegou ao fim | o usuário solicita um relatório mensal | o sistema deve exibir uma tabela/gráfico mostrando: turma, total de faltas, alunos com notas < 6.0, e alunos em risco de evasão |
+| RF008 | o usuário está logado com perfil de gestor ou coordenador | acessa a página inicial do sistema | deve visualizar: taxa de evasão geral, lista de alunos em risco, frequência média da instituição e evolução mensal dos indicadores |
 
 ## 3.5 Matriz de rastreabilidade inicial
 
+A matriz mostra de onde veio cada requisito.
+
 | Evidência ou achado | Necessidade identificada | Requisito relacionado | Status |
 |---|---|---|---|
-| A evasão escolar é um problema multidimensional e exige acompanhamento contínuo | Organizar informações para apoiar a permanência escolar | RF004, RF005, RF008 | Validado |
-| O sistema deve registrar frequência, notas, ocorrências e intervenções | Acompanhar sinais de risco acadêmico, disciplinar e assistencial | RF002, RF003 | Validado |
-| O sistema trata dados pessoais e educacionais | Proteger a privacidade e cumprir a LGPD | RNF001, RNF002, RNF003, RNF004 | Validado |
-| Alertas devem ser configuráveis pela instituição | Evitar decisões baseadas em um único indicador | RF004, RN001, RN002 | Validado |
-| "Preciso saber quais alunos estão em risco de abandonar o semestre para agir preventivamente" | Emitir alertas semanais para coordenação | RF004, RF005 | Aula 8 — Necessidade do gestor |
-| "Correlação não implica causalidade" | Garantir que IA seja apoio, não decisão | RNF007 | Aula 2 — Exemplo EDA/Permanência |
+| Fala 1 — Coordenador: "Preciso receber um alerta automático sempre que um aluno faltar muitos dias seguidos" | Emitir alerta automático para intervenção precoce | RF004, RF005 | Validado |
+| Fala 2 — Professor: "O sistema precisa abrir a lista de alunos rapidamente no meu celular, em no máximo 5 segundos" | Garantir desempenho em conexões lentas | RNF001, RNF005 | Validado |
+| Fala 3 — Gestor: "Gostaria de extrair um relatório consolidado no fim do mês cruzando faltas e notas baixas" | Gerar relatórios mensais consolidados | RF006 | Validado |
+| Achado: dados educacionais podem identificar estudantes | Impedir exposição individual | RNF003, RNF004 | Validado |
+| Achado: internet da escola oscila | Garantir funcionamento offline | RNF002 | Pendente |
 
 ---
 
 # 4. Registro de Uso da IA
 
+Registre como a IA foi usada. A IA pode sugerir, revisar e organizar, mas o grupo deve validar e assumir a responsabilidade pelo conteúdo.
+
 | Data | Ferramenta | Prompt usado | O que foi aproveitado | O que foi corrigido ou descartado | Responsável pela revisão |
 |---|---|---|---|---|---|
-| 02/07/2026 | ChatGPT | "Atue como um analista de dados educacionais. Estamos criando um sistema de alerta precoce para evasão escolar no IFMA. Sugira 5 indicadores-chave (KPIs) que podem prever a evasão com base em frequência e notas." | Sugestão de indicadores como frequência abaixo de 75% e múltiplas notas baixas. | Ajustamos os indicadores para a realidade do IFMA e removemos sugestões que envolviam dados sensíveis. | Gabriel Rodrigues |
-| 03/07/2026 | ChatGPT | "Atue como um engenheiro de requisitos. Organize esta lista de necessidades em requisitos funcionais e não funcionais." | Estruturação inicial dos RFs e RNFs. | Removemos requisitos que envolviam uso punitivo de dados e ajustamos a redação técnica. | Pedro Eduardo |
-| 08/07/2026 | ChatGPT | "Separe o conteúdo em Documento de Visão e Documento de Requisitos." | Organização geral do documento e estruturação das seções. | Ajustamos stakeholders, escopo e objetivos conforme o Canvas de Delimitação preenchido pelo grupo. | Marcus Antônio |
-| 08/07/2026 | ChatGPT | "Atue como um engenheiro de requisitos sênior. Com base no texto fornecido, gere uma lista de requisitos funcionais e não funcionais para o sistema de permanência escolar. Não invente dados. Marque dúvidas como pendentes." | Revisão e complementação dos RFs, RNFs e regras de negócio. | Validamos cada sugestão com o conteúdo fornecido e descartamos alucinações. | Ryan Corrêa |
+| 02/07/2026 | ChatGPT | Atue como analista de dados educacionais. Sugira 5 indicadores-chave que podem prever a evasão com base em frequência e notas. | Sugestão de indicadores: frequência inferior a 75%, notas abaixo da média, faltas consecutivas | Ajustamos os limites dos indicadores com base na realidade da escola | Gabriel Rodrigues |
+| 03/07/2026 | ChatGPT | Com base nas 3 falas abaixo, classifique como RF, RNF ou Regra de Negócio e escreva os requisitos estruturados. | Classificação correta das falas e estruturação dos requisitos | Ajustamos a redação de dois requisitos para maior clareza | Pedro Eduardo |
+| 08/07/2026 | ChatGPT | Organize a lista de requisitos em Documento de Visão e Documento de Requisitos. | Separação do conteúdo em dois blocos | Ajustamos itens do escopo que estavam fora do prazo da versão 1.0 | Marcus Antônio |
+| 08/07/2026 | ChatGPT | Revise a consistência entre os requisitos funcionais e não funcionais com o escopo definido. | Identificação de possíveis conflitos entre RFs e RNFs | Ajustamos a prioridade de dois requisitos para melhor alinhamento com o escopo | Ryan Corrêa |
 
 ---
 
@@ -401,6 +433,8 @@ Apoiar gestores, professores e equipes multidisciplinares a identificar precocem
 
 ## 5.4 Diagramas
 
+[preencher nas próximas aulas]
+
 | Diagrama | Status | Arquivo previsto |
 |---|---|---|
 | Diagrama de casos de uso | Pendente | diagramas/casos_de_uso.puml |
@@ -414,12 +448,10 @@ Apoiar gestores, professores e equipes multidisciplinares a identificar precocem
 
 | ID | Pendência ou dúvida | Quem deve validar | Prazo previsto |
 |---|---|---|---|
-| P001 | Definir os critérios específicos que serão configuráveis para alertas de risco | Gestores/Coordenação | Próxima reunião com stakeholders |
-| P002 | Confirmar a infraestrutura disponível para hospedagem do sistema | Área de TI da instituição | Próximas aulas |
-| P003 | Validar as regras de negócio com a coordenação pedagógica e assistência estudantil | Coordenação/Assistentes sociais | Próxima reunião |
-| P004 | Confirmar se a base usada será fictícia ou anonimizada | Professor/Grupo | Próxima aula prática |
-| P005 | Definir quais integrações com sistemas acadêmicos existentes serão realizadas | Equipe de TI/Gestão | Próximas aulas |
-| P006 | Validar os requisitos de acessibilidade com usuários reais | Equipe pedagógica | Próximas aulas |
+| P001 | Validar com a coordenação se o critério de 5 faltas consecutivas é o mais adequado | Coordenação Pedagógica | 15/07/2026 |
+| P002 | Confirmar disponibilidade de base de dados fictícia para testes | Professor | 15/07/2026 |
+| P003 | Definir fluxo exato de notificações | Grupo + Stakeholder | 15/07/2026 |
+| P004 | Validar com a equipe pedagógica os campos obrigatórios para registro de intervenção | Equipe Multidisciplinar | 15/07/2026 |
 
 ---
 
@@ -428,11 +460,9 @@ Apoiar gestores, professores e equipes multidisciplinares a identificar precocem
 Declaramos que esta versão D0 foi elaborada com base nas atividades realizadas em sala, nas discussões do grupo e no uso responsável de IA generativa. O grupo revisou o conteúdo, corrigiu sugestões inadequadas e assume responsabilidade pelas informações registradas.
 
 **Integrantes:**  
-- Gabriel Rodrigues  
-- Pedro Eduardo  
-- Marcus Antônio  
-- Ryan Corrêa  
+- Gabriel  Rodrigues
+- Marcus  Antônio
+- Ryan  Corrêa 
+- Pedro  Eduardo
 
-**Data:** 02/07/2026
-
-
+**Data:** 08/07/2026
