@@ -1,0 +1,76 @@
+@startuml
+
+title Atividade - Processamento de Indicadores e Relatórios (SIMPE)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+skinparam activity {
+    BackgroundColor #E4F5EC
+    BorderColor #006B3F
+    FontColor #003B25
+    FontStyle bold
+}
+
+skinparam ArrowColor #006B3F
+skinparam ArrowFontColor #1F2937
+skinparam ArrowThickness 1.4
+
+|#FDECEC|Gestor ou Coordenação|
+start
+
+:Definir filtros de relatório\n(Período, Turma e Curso);
+:Solicitar extração de indicadores\nde Permanência Escolar;
+
+|#EAF7EF|Sistema SIMPE|
+:Verificar nível de acesso (RF010);
+:Consultar registros de Frequência,\nNotas e Ocorrências;
+
+if (Dados integrados?) then (sim)
+
+    :Aplicar RN001: Identificar Frequência < 75%\nou > 3 faltas consecutivas;
+    :Aplicar RN005: Filtrar notas < 6,0;
+    :Executar Anonimização de Dados (RNF003);
+    :Gerar Dashboard com Alertas Vermelhos\ne Taxas de Evasão (RF008);
+    :Gerar arquivo PDF/CSV consolidado (RF009);
+
+    |#FDECEC|Gestor ou Coordenação|
+    :Revisar Alertas de Risco (RF004);
+    :Validar hipóteses de evasão;
+
+    |#EEF6FF|Direção / Validador|
+    :Avaliar indicadores sociais agregados;
+    :Aprovar planejamento de intervenções;
+
+    |#EAF7EF|Sistema SIMPE|
+    :Registrar log de acesso para auditoria (RNF007);
+
+    |#FDECEC|Gestor ou Coordenação|
+    :Finalizar exportação do relatório mensal;
+
+else (não)
+
+    :Notificar pendência de qualidade\nou falta de dados (RN004);
+
+    |#FDECEC|Gestor ou Coordenação|
+    :Solicitar aos Professores correção\nde lançamentos ou importação CSV;
+    :Reimportar base via UC12;
+
+    |#EAF7EF|Sistema SIMPE|
+    :Validar novos dados;
+
+    if (Nova base válida?) then (sim)
+        :Processar indicadores de risco;
+        :Gerar relatório final;
+    else (não)
+        :Bloquear geração de dashboard;
+        :Exibir inconsistências para o Gestor;
+    endif
+
+endif
+
+stop
+
+@enduml
