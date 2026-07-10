@@ -1,0 +1,109 @@
+
+@startuml
+
+title Percurso Completo - SIMPE (Entrada, Processamento e Saída)
+
+left to right direction
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+skinparam actor {
+    BorderColor #E30613
+    BackgroundColor #FDECEC
+    FontColor #1F2937
+    FontStyle bold
+}
+
+skinparam rectangle {
+    BorderColor #006B3F
+    BackgroundColor #F7FFF9
+    FontColor #006B3F
+    FontStyle bold
+}
+
+skinparam usecase {
+    BorderColor #006B3F
+    BackgroundColor #E4F5EC
+    FontColor #006B3F
+    FontStyle bold
+}
+
+skinparam ArrowColor #006B3F
+skinparam ArrowFontColor #1F2937
+skinparam ArrowThickness 1.4
+
+' Atores de Entrada (Fornecedores de Dados)
+actor "Secretaria" as Sec
+actor "Professores" as Prof
+actor "Equipe\nMultidisciplinar" as Equipe
+
+' Atores de Saída (Usuários das Saídas)
+actor "Coordenação\ne Gestores" as Gestor
+actor "Responsáveis\npelos estudantes" as Resp
+actor "Formuladores\nde políticas" as Politica
+
+' Organização do layout lateral
+Sec -[hidden]down- Prof
+Prof -[hidden]down- Equipe
+
+Gestor -[hidden]down- Resp
+Resp -[hidden]down- Politica
+
+rectangle "Sistema Inteligente de Monitoramento (SIMPE)" {
+
+    usecase "1. Realizar autenticação\ne controle de acesso" as UC_AUTH
+    usecase "2. Receber dados\n(cadastros, notas, faltas)" as UC_IN
+    usecase "3. Calcular indicadores\ne analisar risco" as UC_PROC
+    usecase "4. Validar gatilhos\nde evasão" as UC_GATILHO
+    usecase "5. Gerar alertas\nautomáticos" as UC_ALERTA
+    usecase "6. Atualizar painel,\nhistórico e relatórios" as UC_OUT
+
+    ' Alinhamento interno
+    UC_AUTH -[hidden]down- UC_IN
+    UC_IN -[hidden]down- UC_PROC
+    UC_GATILHO -[hidden]down- UC_ALERTA
+}
+
+' ==========================================
+' SETAS MOSTRANDO O PERCURSO DO PROJETO (FLUXO)
+' ==========================================
+
+' Passo 1: Sistema de Autenticação liberando uso
+UC_AUTH --> UC_IN : "libera entrada"
+
+' Passo 2: Os dados inseridos vão para processamento
+UC_IN --> UC_PROC : "alimenta processamento"
+
+' Passo 3: O processamento identifica os padrões
+UC_PROC --> UC_GATILHO : "identifica padrões"
+
+' Passo 4: O gatilho dispara ações
+UC_GATILHO --> UC_ALERTA : "dispara"
+UC_GATILHO --> UC_OUT : "consolida dados"
+
+' ==========================================
+' CONEXÕES COM ATORES DE ENTRADA (ESQUERDA)
+' ==========================================
+Sec --> UC_AUTH
+Prof --> UC_AUTH
+Equipe --> UC_AUTH
+
+Sec --> UC_IN
+Prof --> UC_IN
+Equipe --> UC_IN
+
+' ==========================================
+' CONEXÕES COM ATORES DE SAÍDA (DIREITA)
+' ==========================================
+UC_ALERTA --> Gestor
+UC_OUT --> Gestor
+UC_OUT --> Equipe
+UC_OUT --> Resp
+UC_OUT --> Politica
+
+@enduml
