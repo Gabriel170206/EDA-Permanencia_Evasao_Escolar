@@ -1,0 +1,102 @@
+Project SIMPE {
+  database_type: 'PostgreSQL'
+  Note: 'Sistema Inteligente de Monitoramento da Permanência Escolar[cite: 3]'
+}
+
+Table Perfil {
+  id int [pk, increment]
+  nome varchar [not null, note: 'Gestor, Coordenador, Professor, etc.[cite: 5]']
+}
+
+Table Usuario {
+  id int [pk, increment]
+  nome varchar [not null]
+  email varchar [unique, not null]
+  senha_hash varchar [not null]
+  perfil_id int [ref: > Perfil.id]
+}
+
+Table Responsavel {
+  id int [pk, increment]
+  nome varchar [not null]
+  telefone varchar
+  email varchar
+}
+
+Table Curso {
+  id int [pk, increment]
+  nome varchar [not null]
+}
+
+Table Turma {
+  id int [pk, increment]
+  nome varchar [not null]
+  ano_letivo int
+  curso_id int [ref: > Curso.id]
+}
+
+Table Aluno {
+  id_aluno int [pk, increment]
+  nome varchar [not null]
+  matricula varchar [unique, not null]
+  turma_id int [ref: > Turma.id]
+  responsavel_id int [ref: > Responsavel.id]
+}
+
+Table Disciplina {
+  id int [pk, increment]
+  nome varchar [not null]
+}
+
+Table Frequencia {
+  id int [pk, increment]
+  id_aluno int [ref: > Aluno.id_aluno, not null]
+  id_turma int [ref: > Turma.id, not null]
+  data date [not null]
+  presente boolean [not null]
+  falta_justificada boolean [not null, default: false]
+  Note: 'Baseado no Dicionário de Dados v1 - RF002 e RF004[cite: 8]'
+}
+
+Table Nota {
+  id int [pk, increment]
+  aluno_id int [ref: > Aluno.id_aluno]
+  disciplina_id int [ref: > Disciplina.id]
+  valor decimal(5,2) [not null]
+  periodo varchar [note: 'Ex: 1º Bimestre[cite: 3]']
+}
+
+Table Ocorrencia {
+  id int [pk, increment]
+  aluno_id int [ref: > Aluno.id_aluno]
+  usuario_id int [ref: > Usuario.id]
+  data date [not null]
+  tipo varchar
+  descricao text [not null]
+}
+
+Table Intervencao {
+  id int [pk, increment]
+  aluno_id int [ref: > Aluno.id_aluno]
+  usuario_id int [ref: > Usuario.id, note: 'Assistente Social/Psicólogo/Coordenação[cite: 3]']
+  data date [not null]
+  descricao text [not null]
+  status varchar [note: 'planejada, em andamento, concluída[cite: 1]']
+  resultado_esperado text
+}
+
+Table Alerta {
+  id int [pk, increment]
+  aluno_id int [ref: > Aluno.id_aluno]
+  data_geracao datetime [default: `now()`]
+  motivo varchar [not null, note: 'Ex: 5 faltas consecutivas injustificadas[cite: 8]']
+  lido boolean [default: false]
+}
+
+Table Configuracao_Risco {
+  id int [pk, increment]
+  parametro varchar [unique, not null]
+  valor float [not null]
+  descricao text
+  Note: 'Parâmetros configuráveis, ex: limite de faltas (5), nota mínima (6.0)[cite: 4, 7]'
+}

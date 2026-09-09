@@ -1,0 +1,299 @@
+{
+  "version": "3.0.0",
+  "darkMode": true,
+  "gridEnabling": false,
+  "currentViewName": null,
+  "defaultView": {
+    "detailLevel": "All",
+    "relationshipMode": "All",
+    "tablePositions": [
+      {
+        "name": "Perfil",
+        "schemaName": "public",
+        "x": 323.8,
+        "y": 12
+      },
+      {
+        "name": "Usuario",
+        "schemaName": "public",
+        "x": 831.361087206803,
+        "y": -239.00614912584098
+      },
+      {
+        "name": "Responsavel",
+        "schemaName": "public",
+        "x": 323.8,
+        "y": 154
+      },
+      {
+        "name": "Curso",
+        "schemaName": "public",
+        "x": 323.8,
+        "y": 360
+      },
+      {
+        "name": "Turma",
+        "schemaName": "public",
+        "x": 723.460728800112,
+        "y": 352.7905120878986
+      },
+      {
+        "name": "Aluno",
+        "schemaName": "public",
+        "x": 827.467337206803,
+        "y": 12
+      },
+      {
+        "name": "Disciplina",
+        "schemaName": "public",
+        "x": 323.8,
+        "y": 502
+      },
+      {
+        "name": "Frequencia",
+        "schemaName": "public",
+        "x": 1817.49892578125,
+        "y": 822
+      },
+      {
+        "name": "Nota",
+        "schemaName": "public",
+        "x": 1817.49892578125,
+        "y": 1092
+      },
+      {
+        "name": "Ocorrencia",
+        "schemaName": "public",
+        "x": 1817.49892578125,
+        "y": 12
+      },
+      {
+        "name": "Intervencao",
+        "schemaName": "public",
+        "x": 1817.49892578125,
+        "y": 282
+      },
+      {
+        "name": "Alerta",
+        "schemaName": "public",
+        "x": 1817.49892578125,
+        "y": 584
+      },
+      {
+        "name": "Configuracao_Risco",
+        "schemaName": "public",
+        "x": 12,
+        "y": 12
+      }
+    ],
+    "tableGroupCollapseStates": [],
+    "stickyNoteLayouts": [],
+    "referencePaths": [
+      {
+        "firstFieldNames": [
+          "id"
+        ],
+        "firstTableName": "Perfil",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "perfil_id"
+        ],
+        "secondTableName": "Usuario",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id"
+        ],
+        "firstTableName": "Curso",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "curso_id"
+        ],
+        "secondTableName": "Turma",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id"
+        ],
+        "firstTableName": "Turma",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "turma_id"
+        ],
+        "secondTableName": "Aluno",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id"
+        ],
+        "firstTableName": "Responsavel",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "responsavel_id"
+        ],
+        "secondTableName": "Aluno",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id_aluno"
+        ],
+        "firstTableName": "Aluno",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "id_aluno"
+        ],
+        "secondTableName": "Frequencia",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id"
+        ],
+        "firstTableName": "Turma",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "id_turma"
+        ],
+        "secondTableName": "Frequencia",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id_aluno"
+        ],
+        "firstTableName": "Aluno",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "aluno_id"
+        ],
+        "secondTableName": "Nota",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id"
+        ],
+        "firstTableName": "Disciplina",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "disciplina_id"
+        ],
+        "secondTableName": "Nota",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id_aluno"
+        ],
+        "firstTableName": "Aluno",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "aluno_id"
+        ],
+        "secondTableName": "Ocorrencia",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id"
+        ],
+        "firstTableName": "Usuario",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "usuario_id"
+        ],
+        "secondTableName": "Ocorrencia",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id_aluno"
+        ],
+        "firstTableName": "Aluno",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "aluno_id"
+        ],
+        "secondTableName": "Intervencao",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id"
+        ],
+        "firstTableName": "Usuario",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "usuario_id"
+        ],
+        "secondTableName": "Intervencao",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "id_aluno"
+        ],
+        "firstTableName": "Aluno",
+        "firstSchemaName": "public",
+        "firstRelation": "1",
+        "secondFieldNames": [
+          "aluno_id"
+        ],
+        "secondTableName": "Alerta",
+        "secondSchemaName": "public",
+        "secondRelation": "*",
+        "checkPoints": [
+          {
+            "x": 1432.9773697752764,
+            "y": 60
+          },
+          {
+            "x": 1432.9773697752764,
+            "y": 664
+          }
+        ]
+      }
+    ]
+  },
+  "views": {}
+}
