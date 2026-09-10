@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="../css/styles.css">
+    <title>SIMPE - Relatórios</title>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>📋 SIMPE - Relatórios de Evasão</h1>
+        <p>RF006 - Relatório mensal consolidado</p>
+    </div>
+    <div class="menu">
+        <a href="index.html">📊 Dashboard</a>
+        <a href="alertas.html">🚨 Alertas</a>
+        <a href="relatorios.html">📋 Relatórios</a>
+        <a href="frequencia.html">📅 Frequência</a>
+        <a href="notas.html">📝 Notas</a>
+        <a href="intervencoes.html">🤝 Intervenções</a>
+        <a href="alunos.html">👨‍🎓 Alunos</a>
+    </div>
+
+    <div class="card">
+        <h3>🔍 Filtrar Relatório</h3>
+        <select id="filtroTurma" onchange="exibirRelatorio()">
+            <option value="todas">Todas as Turmas</option>
+            <option value="INFO-01">INFO-01</option>
+            <option value="INFO-02">INFO-02</option>
+            <option value="ADM-01">ADM-01</option>
+            <option value="ADM-02">ADM-02</option>
+            <option value="ELET-01">ELET-01</option>
+        </select>
+    </div>
+
+    <div class="card">
+        <h3>📊 Relatório Consolidado - Setembro/2026</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Turma</th>
+                    <th>Total Alunos</th>
+                    <th>Faltas</th>
+                    <th>Média</th>
+                    <th>Notas Baixas</th>
+                    <th>Em Risco</th>
+                    <th>Nível</th>
+                </tr>
+            </thead>
+            <tbody id="corpoRelatorio"></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>📊 Resumo Geral</h3>
+        <div id="resumoGeral"></div>
+    </div>
+
+    <div class="card">
+        <button class="btn" onclick="alert('PDF exportado (simulação)')">📥 Exportar PDF</button>
+        <button class="btn" onclick="alert('CSV exportado (simulação)')">📥 Exportar CSV</button>
+    </div>
+
+    <script src="../js/app.js"></script>
+</body>
+
+</html>

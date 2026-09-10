@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="../css/styles.css">
+    <title>SIMPE - Alunos</title>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>👨‍🎓 SIMPE - Alunos</h1>
+        <p>RF001 - Cadastro e gestão de alunos</p>
+    </div>
+    <div class="menu">
+        <a href="index.html">📊 Dashboard</a>
+        <a href="alertas.html">🚨 Alertas</a>
+        <a href="relatorios.html">📋 Relatórios</a>
+        <a href="frequencia.html">📅 Frequência</a>
+        <a href="notas.html">📝 Notas</a>
+        <a href="intervencoes.html">🤝 Intervenções</a>
+        <a href="alunos.html">👨‍🎓 Alunos</a>
+    </div>
+
+    <div class="card">
+        <h3>🔍 Buscar Aluno</h3>
+        <input type="text" id="busca" placeholder="Digite nome ou matrícula..." onkeyup="filtrarAlunos()">
+        <select id="filtroRisco" onchange="filtrarAlunos()">
+            <option value="todos">Todos</option>
+            <option value="crítico">⚠️ Crítico</option>
+            <option value="atenção">🔍 Atenção</option>
+            <option value="ok">✅ OK</option>
+        </select>
+        <button onclick="filtrarAlunos()">🔍 Filtrar</button>
+    </div>
+
+    <div class="card">
+        <h3 id="tituloLista">📋 Lista de Alunos</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Matrícula</th>
+                    <th>Nome</th>
+                    <th>Turma</th>
+                    <th>Faltas</th>
+                    <th>Média</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="corpoTabela"></tbody>
+        </table>
+    </div>
+
+    <script src="../js/app.js"></script>
+</body>
+
+</html>
