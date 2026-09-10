@@ -28,7 +28,7 @@ async function buscarAlunos() {
     const filtro = document.getElementById('filtroRisco')?.value || 'todos';
 
     try {
-        const resposta = await fetch(`${API_URL}/alunos?busca=${busca}&filtro=${filtro}`);
+        const resposta = await fetch(`${API_URL}/alunos?busca=${encodeURIComponent(busca)}&filtro=${encodeURIComponent(filtro)}`);
         const alunos = await resposta.json();
         exibirAlunos(alunos);
     } catch (erro) {
@@ -70,7 +70,21 @@ async function carregarAlertas() {
     try {
         const resposta = await fetch(`${API_URL}/alertas`);
         const alertas = await resposta.json();
-        console.log('Alertas carregados:', alertas);
+        const lista = document.getElementById('listaAlertas');
+        const historico = document.querySelector('#historicoAlertas tbody');
+        if (lista) {
+            lista.innerHTML = alertas.map(alerta => `
+                <div class="${alerta.nivel === 'atenção' ? 'alert-warning' : 'alert-critical'}">
+                    <strong>${alerta.nivel === 'atenção' ? '🟡 ATENÇÃO' : '🔴 CRÍTICO'}:</strong>
+                    ${alerta.aluno} - ${alerta.motivo}<br><small>${alerta.data} | ${alerta.turma}</small>
+                </div>
+            `).join('') || '<p>Nenhum alerta encontrado.</p>';
+        }
+        if (historico) {
+            historico.innerHTML = alertas.map(alerta => `
+                <tr><td>${alerta.data}</td><td>${alerta.aluno}</td><td>${alerta.motivo}</td><td>${alerta.status}</td></tr>
+            `).join('');
+        }
     } catch (erro) {
         console.error('Erro ao carregar alertas:', erro);
     }
@@ -83,7 +97,13 @@ async function carregarNotas() {
     try {
         const resposta = await fetch(`${API_URL}/notas`);
         const notas = await resposta.json();
-        console.log('Notas carregadas:', notas);
+        const tabela = document.querySelector('#tabelaNotas tbody');
+        if (tabela) {
+            tabela.innerHTML = notas.map(nota => `
+                <tr><td>${nota.aluno}</td><td>${nota.valor}</td><td>${nota.periodo || '-'}</td>
+                <td>${nota.media}</td><td>${nota.status}</td></tr>
+            `).join('');
+        }
     } catch (erro) {
         console.error('Erro ao carregar notas:', erro);
     }
@@ -96,11 +116,41 @@ async function carregarIntervencoes() {
     try {
         const resposta = await fetch(`${API_URL}/intervencoes`);
         const intervencoes = await resposta.json();
-        console.log('Intervenções carregadas:', intervencoes);
+        const tabela = document.querySelector('#tabelaIntervencoes tbody');
+        if (tabela) {
+            tabela.innerHTML = intervencoes.map(intervencao => `
+                <tr><td>${intervencao.data}</td><td>${intervencao.aluno}</td>
+                <td>${intervencao.descricao}</td><td>${intervencao.responsavel}</td><td>${intervencao.status}</td></tr>
+            `).join('');
+        }
     } catch (erro) {
         console.error('Erro ao carregar intervenções:', erro);
     }
 }
+
+async function salvarFrequencia() {
+    const registros = [...document.querySelectorAll('#tabelaFrequencia tbody tr')].map(linha => ({
+        id_aluno: Number(linha.dataset.alunoId),
+        id_turma: Number(linha.dataset.turmaId),
+        data: linha.dataset.data,
+        presente: linha.querySelector('select').value === 'presente'
+    }));
+
+    try {
+        const resposta = await fetch(`${API_URL}/frequencia`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(registros)
+        });
+        const resultado = await resposta.json();
+        if (!resposta.ok) throw new Error(resultado.erro);
+        alert(resultado.mensagem);
+    } catch (erro) {
+        console.error('Erro ao salvar frequência:', erro);
+        alert('Não foi possível salvar a frequência.');
+    }
+}
+window.salvarFrequencia = salvarFrequencia;
 
 // ==========================================
 // 6. RELATÓRIOS (relatorios.html)

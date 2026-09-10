@@ -1,121 +1,77 @@
-# Documentação Unificada do Banco de Dados - SIMPE
+# Dados e Banco de Dados
 
-Este documento reúne os artefatos e o status do banco de dados do **SIMPE (Sistema Inteligente de Monitoramento da Permanência Escolar)**[cite: 2].
+Esta pasta reúne os artefatos de dados do SIMPE (Sistema Inteligente de Monitoramento da Permanência Escolar). O subdiretório `db` contém o modelo conceitual/visual, o script de criação e carga e uma cópia do banco SQLite.
 
----
+## Arquivos em `db`
 
-## 1. Schema DBML (`diagrams/database/schema.dbml`)
+| Arquivo | Tipo | Finalidade |
+| --- | --- | --- |
+| `dataBase.dbdiagram` | JSON de projeto do dbdiagram.io | Armazena a configuração visual do diagrama, a posição das tabelas e os caminhos dos relacionamentos. Não é o script de criação do banco. |
+| `dataBase.dbml` | DBML | Define o modelo lógico do projeto, com 13 tabelas, campos, chaves, referências e anotações. Declara o tipo de banco como PostgreSQL. |
+| `simpe_sqlite.sql` | SQL | Script executável para SQLite. Ativa chaves estrangeiras, recria as tabelas, aplica validações e insere dados de referência e exemplos. |
+| `simpe.db` | Banco SQLite | Arquivo binário do banco materializado. Possui 77.824 bytes na última verificação. A inspeção detalhada de seu conteúdo depende de um cliente SQLite. |
 
-*(Código DBML omitido conforme solicitado)*
+## Visão geral do modelo
 
----
+O banco organiza o acompanhamento escolar em quatro grupos principais:
 
-## 2. README do Banco de Dados (`database/README.md`)
+- **Acesso e perfis:** `Perfil` e `Usuario`.
+- **Estrutura escolar:** `Curso`, `Turma`, `Aluno`, `Responsavel` e `Disciplina`.
+- **Acompanhamento pedagógico:** `Frequencia` e `Nota`.
+- **Gestão de risco e acompanhamento:** `Ocorrencia`, `Intervencao`, `Alerta` e `Configuracao_Risco`.
 
-# Visão Geral do Banco de Dados - SIMPE
+### Tabelas e finalidade
 
-Este diretório contém os artefatos e a definição da estrutura do banco de dados do **Sistema Inteligente de Monitoramento da Permanência Escolar (SIMPE)**[cite: 2].
+| Tabela | Finalidade | Chave principal |
+| --- | --- | --- |
+| `Perfil` | Perfis de acesso, como gestor, coordenador e professor. | `id` |
+| `Usuario` | Usuários do sistema e seus perfis. | `id` |
+| `Responsavel` | Dados de contato dos responsáveis pelos alunos. | `id` |
+| `Curso` | Cursos ofertados pela instituição. | `id` |
+| `Turma` | Turmas por curso e ano letivo. | `id` |
+| `Aluno` | Cadastro do aluno, matrícula, turma e responsável. | `id_aluno` |
+| `Disciplina` | Disciplinas avaliadas. | `id` |
+| `Frequencia` | Presença diária, falta e justificativa do aluno. | `id` |
+| `Nota` | Notas do aluno por disciplina e período. | `id` |
+| `Ocorrencia` | Registros de ocorrências associados a alunos e usuários. | `id` |
+| `Intervencao` | Ações de acompanhamento, responsável pela ação, status e resultado esperado. | `id` |
+| `Alerta` | Alertas de risco gerados para alunos e controle de leitura. | `id` |
+| `Configuracao_Risco` | Parâmetros usados na identificação de risco escolar. | `id` |
 
-## O que cada tabela representa
+## Relacionamentos
 
-As 13 tabelas do sistema estão divididas em 4 grupos funcionais principais[cite: 2]:
+- `Perfil` 1:N `Usuario` por `Usuario.perfil_id`.
+- `Curso` 1:N `Turma` por `Turma.curso_id`.
+- `Turma` 1:N `Aluno` por `Aluno.turma_id`.
+- `Responsavel` 1:N `Aluno` por `Aluno.responsavel_id`.
+- `Aluno` 1:N `Frequencia` por `Frequencia.id_aluno`.
+- `Turma` 1:N `Frequencia` por `Frequencia.id_turma`.
+- `Aluno` 1:N `Nota` por `Nota.aluno_id`.
+- `Disciplina` 1:N `Nota` por `Nota.disciplina_id`.
+- `Aluno` 1:N `Ocorrencia`, `Intervencao` e `Alerta`.
+- `Usuario` 1:N `Ocorrencia` e `Intervencao`.
 
-### Acesso e Perfis
-- **`Perfil`**: Define os papéis e permissões de acesso no sistema (ex.: gestor, coordenador, professor)[cite: 2].
-- **`Usuario`**: Usuários cadastrados no sistema para acesso administrativo e pedagógico[cite: 2]. Cada usuário possui um e-mail único e vinculação obrigatória a um perfil[cite: 2].
+## Regras e validações do SQLite
 
-### Estrutura Escolar
-- **`Curso`**: Cursos ofertados pela instituição de ensino[cite: 2].
-- **`Turma`**: Turmas associadas a um curso específico e a um ano letivo[cite: 2].
-- **`Aluno`**: Cadastro principal dos estudantes, contendo número de matrícula único, turma vinculada e responsável[cite: 2].
-- **`Responsavel`**: Contato principal (telefone/e-mail) do responsável legal pelo aluno[cite: 2].
-- **`Disciplina`**: Disciplinas/matérias escolares ministradas[cite: 2].
+O script `simpe_sqlite.sql` aplica `PRAGMA foreign_keys = ON` e recria as tabelas na ordem correta. Entre as regras implementadas estão:
 
-### Acompanhamento Pedagógico
-- **`Frequencia`**: Registro diário de presença/falta do aluno em cada turma, incluindo indicação de falta justificada (0 para não, 1 para sim) e justificativa opcional[cite: 2].
-- **`Nota`**: Avaliações dos alunos por disciplina e período[cite: 2]. O valor da nota não pode ser negativo[cite: 2].
+- nomes, matrículas, e-mails, descrições e parâmetros não podem ser vazios quando obrigatórios;
+- `Usuario.email`, `Aluno.matricula` e `Configuracao_Risco.parametro` são únicos;
+- `presente`, `falta_justificada` e `lido` aceitam apenas `0` ou `1`;
+- `Nota.valor` não pode ser negativa;
+- `Intervencao.status` aceita `planejada`, `em andamento` ou `concluída`;
+- `Alerta.data_geracao` usa a data/hora atual por padrão.
 
-### Gestão de Risco e Acompanhamento
-- **`Ocorrencia`**: Registros comportamentais ou eventos relevantes do aluno no cotidiano escolar, apontados por um usuário[cite: 2].
-- **`Intervencao`**: Ações preventivas ou corretivas planejadas/executadas por um usuário para apoiar o aluno (status: `planejada`, `em andamento` ou `concluída`)[cite: 2].
-- **`Alerta`**: Notificações automáticas geradas pelo sistema com base em fatores de risco (ex.: faltas consecutivas ou notas abaixo da média)[cite: 2]. Possui marcação de leitura (0 ou 1) e data de geração[cite: 2].
-- **`Configuracao_Risco`**: Parâmetros do algoritmo de identificação de risco escolar (ex.: limite de 5 faltas consecutivas, nota mínima 6.0)[cite: 2].
+## Dados iniciais do script
 
----
+O carregamento de exemplo insere 4 perfis, 4 usuários, 3 responsáveis, 2 cursos, 2 turmas, 3 alunos, 3 disciplinas, 4 registros de frequência, 4 notas, 1 ocorrência, 1 intervenção, 1 alerta e 2 configurações de risco. Os parâmetros incluídos são o limite de 5 faltas consecutivas e a nota mínima de 6,0.
 
-## Principais Relacionamentos
+## Observações de consistência
 
-- `Perfil` (1) <---> (N) `Usuario` (campo `perfil_id`)[cite: 2]
-- `Curso` (1) <---> (N) `Turma` (campo `curso_id`)[cite: 2]
-- `Turma` (1) <---> (N) `Aluno` (campo `turma_id`)[cite: 2]
-- `Responsavel` (1) <---> (N) `Aluno` (campo `responsavel_id`)[cite: 2]
-- `Aluno` (1) <---> (N) `Frequencia` (campo `id_aluno`)[cite: 2]
-- `Turma` (1) <---> (N) `Frequencia` (campo `id_turma`)[cite: 2]
-- `Aluno` (1) <---> (N) `Nota` (campo `aluno_id`)[cite: 2]
-- `Disciplina` (1) <---> (N) `Nota` (campo `disciplina_id`)[cite: 2]
-- `Aluno` (1) <---> (N) `Ocorrencia` / `Intervencao` / `Alerta`[cite: 2]
-- `Usuario` (1) <---> (N) `Ocorrencia` / `Intervencao`[cite: 2]
+- `dataBase.dbml` informa `PostgreSQL`, mas `simpe_sqlite.sql` e `simpe.db` representam a implementação SQLite. O tipo de banco deve ser padronizado antes de uma implantação definitiva.
+- O SQLite exige alguns relacionamentos como obrigatórios (`Usuario.perfil_id`, `Turma.curso_id`, `Aluno.turma_id`, `Aluno.responsavel_id` e outros), enquanto o DBML deixa parte deles opcional. O modelo lógico e o script devem ser alinhados para evitar comportamentos diferentes entre ambientes.
+- `dataBase.dbdiagram` é um arquivo de configuração do diagrama e não substitui o DBML nem o script SQL.
 
----
+## Integrante requisitado
 
-## Decisões Importantes de Projeto
-
-1. **Padronização do SGBD (SQLite):**
-   - Havia uma divergência anterior no repositório onde o arquivo DBML citava `PostgreSQL`, enquanto o arquivo de banco executável e script utilizavam `SQLite`[cite: 2]. Mantivemos e oficializamos o **SQLite** para preservar a tecnologia já existente no repositório (`simpe.db` e `simpe_sqlite.sql`)[cite: 2].
-
-2. **Chaves Estrangeiras e Integridade Referencial:**
-   - Ativação obrigatória de `PRAGMA foreign_keys = ON;`[cite: 2].
-   - Todos os relacionamentos primários foram marcados como obrigatórios (`NOT NULL`), garantindo que um aluno não exista sem turma ou responsável, e um usuário não exista sem perfil[cite: 2].
-
-3. **Validações de Campo:**
-   - Valores booleanos representados numericamente por `0` ou `1` via restrição `CHECK` (`presente`, `falta_justificada`, `lido`)[cite: 2].
-   - Restrição `CHECK (valor >= 0)` na tabela de `Nota`[cite: 2].
-   - Restrição `CHECK (status IN ('planejada', 'em andamento', 'concluída'))` na tabela `Intervencao`[cite: 2].
-   - Restrições `UNIQUE` para `Usuario.email`, `Aluno.matricula` e `Configuracao_Risco.parametro`[cite: 2].
-
----
-
-## Dúvidas e Pontos de Atenção
-
-1. **Comprimentos Exatos de Texto:** Como o SQLite possui tipagem dinâmica, o tipo `TEXT` atende a todas as colunas[cite: 2]. Caso o Backend venha a utilizar um ORM com validações estritas de tamanho de string (ex.: `VARCHAR(255)`), precisaremos ajustar essas definições de DTO[cite: 2].
-2. **Carga Inicial de Dados (Seed):** Necessário confirmar com a equipe de Backend quais parâmetros de risco adicionais deverão vir pré-carregados além dos atuais (limite de 5 faltas e nota mínima 6.0)[cite: 2].
-
----
-
-## 3. Script SQL do Schema (`database/schema.sql`)
-
-*(Código SQL omitido conforme solicitado)*
-
----
-
-## 4. Status do Banco de Dados (`database/BANCO_STATUS.md`)
-
-# Status do Banco de Dados - SIMPE
-
-**Status Geral:** `DONE` (Com itens de alinhamento listados em `PARTIAL`)[cite: 2]
-
----
-
-### DONE (Concluído)
-
-- [x] Mapeamento completo e modelagem conceitual/lógica das 13 tabelas do sistema[cite: 2].
-- [x] Padronização e unificação do SGBD como **SQLite** (resolvendo incoerência do DBML legado que citava PostgreSQL)[cite: 2].
-- [x] Criação do arquivo DBML (`schema.dbml`) compatível para visualização gráfica no dbdiagram.io[cite: 2].
-- [x] Criação do script DDL (`schema.sql`) com suporte total a chaves estrangeiras (`PRAGMA foreign_keys = ON`)[cite: 2].
-- [x] Definição de restrições de integridade e regras de negócio no banco (`CHECK` para notas, booleanos e enums de status; `UNIQUE` para matrículas, emails e parâmetros de risco)[cite: 2].
-- [x] Garantia de obrigatoriedade (`NOT NULL`) nos relacionamentos essenciais[cite: 2].
-- [x] Documentação simples e direta das decisões arquiteturais[cite: 2].
-
----
-
-### PARTIAL (Em Verificação)
-
-- [ ] **Integração com Backend (ORM/Queries):** Confirmar se o Backend usará SQLite nativo, Prisma, Sequelize ou SQLAlchemy, e validar se o formato das colunas `DATE` / `DATETIME` atende ao padrão esperado pela API[cite: 2].
-- [ ] **Formato de Criptografia de Senha:** O campo `Usuario.senha` está preparado para receber hashes (ex.: BCrypt / Argon2)[cite: 2]. Validar tamanho/formato com o time de Backend[cite: 2].
-- [ ] **Massa de Dados Inicial (Seeds):** Confirmar os valores definitivos de `Configuracao_Risco` com a coordenação pedagógica e Backend[cite: 2].
-
----
-
-### BLOCKED (Bloqueado)
-
-- *Nenhum item bloqueado no momento.* O banco de dados está funcional e pronto para consumo do Backend[cite: 2].
+Ryan Corrêa

@@ -22,8 +22,8 @@
     </div>
     <div class="card">
         <h3>📋 INFO-01 - 09/09/2026</h3>
-        <table>
-            <tr>
+        <table id="tabelaFrequencia">
+            <tr data-aluno-id="1" data-turma-id="1" data-data="2026-09-09">
                 <th>Matrícula</th>
                 <th>Aluno</th>
                 <th>Presença</th>
@@ -32,45 +32,36 @@
                 <td>2024001</td>
                 <td>João Silva</td>
                 <td><select>
-                        <option>Presente</option>
-                        <option>Falta</option>
-                        <option selected>Falta</option>
+                    <option value="presente">Presente</option>
+                    <option value="falta" selected>Falta</option>
                     </select></td>
             </tr>
-            <tr>
+            <tr data-aluno-id="2" data-turma-id="1" data-data="2026-09-09">
                 <td>2024002</td>
                 <td>Maria Santos</td>
                 <td><select>
-                        <option selected>Presente</option>
-                        <option>Falta</option>
+                    <option value="presente" selected>Presente</option>
+                    <option value="falta">Falta</option>
                     </select></td>
             </tr>
-            <tr>
+            <tr data-aluno-id="3" data-turma-id="2" data-data="2026-09-09">
                 <td>2024003</td>
                 <td>Pedro Oliveira</td>
                 <td><select>
-                        <option selected>Presente</option>
-                        <option>Falta</option>
+                    <option value="presente" selected>Presente</option>
+                    <option value="falta">Falta</option>
                     </select></td>
             </tr>
-            <tr>
+            <tr data-aluno-id="4" data-turma-id="1" data-data="2026-09-09">
                 <td>2024004</td>
                 <td>Ana Souza</td>
                 <td><select>
-                        <option selected>Presente</option>
-                        <option>Falta</option>
-                    </select></td>
-            </tr>
-            <tr>
-                <td>2024005</td>
-                <td>Carlos Lima</td>
-                <td><select>
-                        <option>Presente</option>
-                        <option selected>Falta</option>
+                    <option value="presente" selected>Presente</option>
+                    <option value="falta">Falta</option>
                     </select></td>
             </tr>
         </table>
-        <button
+        <button id="salvarFrequencia" onclick="salvarFrequencia()"
             style="margin-top:10px;background:#1a237e;color:#fff;padding:8px 16px;border:none;border-radius:5px;cursor:pointer">💾
             Salvar Frequência</button>
     </div>

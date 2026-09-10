@@ -1,7 +1,187 @@
 
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
 const app = express();
+
+const databasePath = path.join(__dirname, '..', 'data', 'db', 'simpe.db');
+const schemaPath = path.join(__dirname, '..', 'schema', 'simpe_schema.sql');
+const database = new sqlite3.Database(databasePath);
+
+database.run('PRAGMA foreign_keys = ON');
+
+const databaseReady = new Promise((resolve, reject) => {
+    database.get(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Perfil'",
+        (error, table) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+
+            if (table) {
+                resolve();
+                return;
+            }
+
+            const schema = fs.readFileSync(schemaPath, 'utf8');
+            database.exec(schema, execError => {
+                if (execError) {
+                    reject(execError);
+                    return;
+                }
+
+                resolve();
+            });
+        }
+    );
+});
+
+async function getRiskConfig() {
+    const rows = await queryAll('SELECT parametro, valor FROM Configuracao_Risco');
+    const config = Object.fromEntries(rows.map(row => [row.parametro, Number(row.valor)]));
+    return {
+        consecutiveAbsences: config.limite_faltas_consecutivas || 5,
+        minimumGrade: config.nota_minima || 6,
+        minimumAttendance: config.frequencia_minima || 75
+    };
+}
+
+async function getAlunoRisk(alunoId, config) {
+    const frequencias = await queryAll(
+        `SELECT data, presente, falta_justificada
+         FROM Frequencia WHERE id_aluno = ? ORDER BY data DESC`,
+        [alunoId]
+    );
+    const notas = await queryAll('SELECT valor FROM Nota WHERE aluno_id = ?', [alunoId]);
+    const faltas = frequencias.filter(registro => !registro.presente).length;
+    const media = notas.length ? notas.reduce((total, nota) => total + Number(nota.valor), 0) / notas.length : null;
+    const frequenciaPercentual = frequencias.length
+        ? (frequencias.filter(registro => registro.presente).length / frequencias.length) * 100
+        : 100;
+    let faltasConsecutivas = 0;
+
+    for (let index = 0; index < frequencias.length; index += 1) {
+        const registro = frequencias[index];
+        if (registro.presente || registro.falta_justificada) break;
+        if (index > 0) {
+            const anterior = new Date(frequencias[index - 1].data);
+            const atual = new Date(registro.data);
+            const dias = (anterior - atual) / 86400000;
+            if (dias !== 1) break;
+        }
+        faltasConsecutivas += 1;
+    }
+
+    const riscoCritico =
+        faltasConsecutivas >= config.consecutiveAbsences ||
+        frequenciaPercentual < config.minimumAttendance ||
+        (media !== null && media < config.minimumGrade);
+    const emAtencao =
+        faltasConsecutivas >= Math.max(1, config.consecutiveAbsences - 2) ||
+        frequenciaPercentual < 90 ||
+        (media !== null && media < config.minimumGrade + 1);
+
+    return { faltas, media, frequenciaPercentual, faltasConsecutivas, riscoCritico, emAtencao };
+}
+
+async function getAlunos(filters) {
+    const rows = await queryAll(`
+        SELECT a.id_aluno AS id, a.id_aluno, a.nome, a.matricula,
+               a.turma_id, t.nome AS turma
+        FROM Aluno a
+        INNER JOIN Turma t ON t.id = a.turma_id
+        ORDER BY a.id_aluno
+    `);
+    const config = await getRiskConfig();
+    let result = [];
+
+    for (const aluno of rows) {
+        const risk = await getAlunoRisk(aluno.id_aluno, config);
+        result.push({
+            ...aluno,
+            faltas: risk.faltas,
+            media: risk.media === null ? 0 : Number(risk.media.toFixed(2)),
+            frequencia: `${risk.frequenciaPercentual.toFixed(1)}%`,
+            faltasConsecutivas: risk.faltasConsecutivas,
+            status: risk.riscoCritico ? 'crítico' : risk.emAtencao ? 'atenção' : 'ok'
+        });
+    }
+
+    if (filters.busca) {
+        const search = filters.busca.toLowerCase();
+        result = result.filter(aluno =>
+            aluno.nome.toLowerCase().includes(search) || aluno.matricula.includes(filters.busca)
+        );
+    }
+
+    if (filters.filtro && filters.filtro !== 'todos') {
+        result = result.filter(aluno => aluno.status === filters.filtro);
+    }
+
+    return result;
+}
+
+function queryAll(sql, params = []) {
+    return new Promise((resolve, reject) => {
+        database.all(sql, params, (error, rows) => error ? reject(error) : resolve(rows));
+    });
+}
+
+function execute(sql, params = []) {
+    return new Promise((resolve, reject) => {
+        database.run(sql, params, function (error) {
+            if (error) {
+                reject(error);
+                return;
+            }
+
+            resolve({ id: this.lastID, changes: this.changes });
+        });
+    });
+}
+
+async function createRiskAlert(alunoId) {
+    const config = await getRiskConfig();
+    const risk = await getAlunoRisk(alunoId, config);
+    let motivo = null;
+
+    if (risk.faltasConsecutivas >= config.consecutiveAbsences) {
+        motivo = `${risk.faltasConsecutivas} faltas consecutivas sem justificativa`;
+    } else if (risk.frequenciaPercentual < config.minimumAttendance) {
+        motivo = `Frequência abaixo de ${config.minimumAttendance}%`;
+    } else if (risk.media !== null && risk.media < config.minimumGrade) {
+        motivo = `Média abaixo de ${config.minimumGrade}`;
+    }
+
+    if (motivo) {
+        const alertasPendentes = await queryAll(
+            'SELECT id FROM Alerta WHERE aluno_id = ? AND lido = 0 ORDER BY id LIMIT 1',
+            [alunoId]
+        );
+        if (alertasPendentes.length) {
+            await execute('UPDATE Alerta SET motivo = ?, data_geracao = CURRENT_TIMESTAMP WHERE id = ?', [motivo, alertasPendentes[0].id]);
+        } else {
+            await execute('INSERT INTO Alerta (aluno_id, motivo) VALUES (?, ?)', [alunoId, motivo]);
+        }
+    }
+}
+
+function createAluno(aluno) {
+    return new Promise((resolve, reject) => {
+        const sql = 'INSERT INTO Aluno (nome, matricula, turma_id, responsavel_id) VALUES (?, ?, ?, ?)';
+        database.run(sql, [aluno.nome, aluno.matricula, aluno.turma_id, aluno.responsavel_id], function (error) {
+            if (error) {
+                reject(error);
+                return;
+            }
+
+            resolve(this.lastID);
+        });
+    });
+}
 
 app.use(cors());
 app.use(express.json());
@@ -53,75 +233,278 @@ let dadosRelatorio = [
 // ENDPOINTS REST
 // ==========================================
 
-app.get('/api/dashboard', (req, res) => {
-    res.json({
-        alunosEmRisco: 12,
-        frequenciaMedia: '87%',
-        alertasHoje: 3,
-        taxaEvasao: '8.5%'
-    });
+app.get('/api/dashboard', async (req, res) => {
+    try {
+        await databaseReady;
+        const alunos = await getAlunos({});
+        const alertasHoje = await queryAll("SELECT id FROM Alerta WHERE date(data_geracao) = date('now', 'localtime')");
+        const alunosEmRisco = alunos.filter(aluno => aluno.status !== 'ok').length;
+        const taxaEvasao = alunos.length ? ((alunosEmRisco / alunos.length) * 100).toFixed(1) : '0.0';
+        const totalFrequencias = await queryAll('SELECT presente FROM Frequencia');
+        const presentes = totalFrequencias.filter(registro => registro.presente).length;
+        const frequenciaMedia = totalFrequencias.length ? Math.round((presentes / totalFrequencias.length) * 100) : 0;
+
+        res.json({
+            alunosEmRisco,
+            frequenciaMedia: `${frequenciaMedia}%`,
+            alertasHoje: alertasHoje.length,
+            taxaEvasao: `${taxaEvasao}%`
+        });
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível carregar o dashboard.', detalhe: error.message });
+    }
 });
 
-app.get('/api/alunos', (req, res) => {
-    const { busca, filtro } = req.query;
-    let resultado = alunos;
+app.get('/api/alunos', async (req, res) => {
+    try {
+        await databaseReady;
+        res.json(await getAlunos(req.query));
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível consultar os alunos.', detalhe: error.message });
+    }
+});
 
-    if (busca) {
-        const buscaLower = busca.toLowerCase();
-        resultado = resultado.filter(a => 
-            a.nome.toLowerCase().includes(buscaLower) || 
-            a.matricula.includes(busca)
+app.post('/api/alunos', async (req, res) => {
+    const { nome, matricula, turma_id, responsavel_id } = req.body;
+
+    if (!nome || !matricula || !turma_id || !responsavel_id) {
+        res.status(400).json({ erro: 'nome, matricula, turma_id e responsavel_id são obrigatórios.' });
+        return;
+    }
+
+    try {
+        await databaseReady;
+        const id = await createAluno({ nome, matricula, turma_id, responsavel_id });
+        const alunosCriados = await getAlunos({ busca: matricula });
+        res.status(201).json(alunosCriados.find(aluno => aluno.id === id));
+    } catch (error) {
+        const status = error.message.includes('UNIQUE constraint') || error.message.includes('FOREIGN KEY constraint') ? 409 : 500;
+        res.status(status).json({ erro: 'Não foi possível salvar o aluno.', detalhe: error.message });
+    }
+});
+
+app.get('/api/alertas', async (req, res) => {
+    try {
+        await databaseReady;
+        const resultado = await queryAll(`
+            SELECT al.id, a.nome AS aluno, t.nome AS turma, al.motivo,
+                   CASE WHEN al.lido = 1 THEN 'Concluído' ELSE 'Pendente' END AS status,
+                   al.data_geracao AS data
+            FROM Alerta al
+            INNER JOIN Aluno a ON a.id_aluno = al.aluno_id
+            INNER JOIN Turma t ON t.id = a.turma_id
+            ORDER BY al.data_geracao DESC
+        `);
+        res.json(resultado.map(alerta => ({ ...alerta, nivel: 'crítico' })));
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível consultar os alertas.', detalhe: error.message });
+    }
+});
+
+app.get('/api/frequencia', async (req, res) => {
+    try {
+        await databaseReady;
+        const registros = await queryAll(`
+            SELECT f.id, f.id_aluno, f.id_turma, f.data, f.presente,
+                   f.falta_justificada, a.nome AS aluno, a.matricula
+            FROM Frequencia f
+            INNER JOIN Aluno a ON a.id_aluno = f.id_aluno
+            ORDER BY f.data DESC, a.nome
+        `);
+        res.json(registros);
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível consultar a frequência.', detalhe: error.message });
+    }
+});
+
+app.post('/api/frequencia', async (req, res) => {
+    const registros = Array.isArray(req.body)
+        ? req.body
+        : Array.isArray(req.body.registros) ? req.body.registros : [req.body];
+    if (!Array.isArray(registros) || registros.length === 0) {
+        res.status(400).json({ erro: 'Envie uma lista de registros de frequência.' });
+        return;
+    }
+
+    try {
+        await databaseReady;
+        for (const registro of registros) {
+            if (!registro.id_aluno || !registro.id_turma || !registro.data || registro.presente === undefined) {
+                res.status(400).json({ erro: 'Cada registro exige id_aluno, id_turma, data e presente.' });
+                return;
+            }
+            await execute(
+                `INSERT INTO Frequencia (id_aluno, id_turma, data, presente, falta_justificada)
+                 VALUES (?, ?, ?, ?, ?)`,
+                [registro.id_aluno, registro.id_turma, registro.data, registro.presente ? 1 : 0, registro.falta_justificada ? 1 : 0]
+            );
+            await createRiskAlert(registro.id_aluno);
+        }
+        res.status(201).json({ mensagem: 'Frequência registrada com sucesso!', dados: registros });
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível salvar a frequência.', detalhe: error.message });
+    }
+});
+
+app.get('/api/notas', async (req, res) => {
+    try {
+        await databaseReady;
+        const resultado = await queryAll(`
+            SELECT n.id, a.matricula, a.nome AS aluno, n.aluno_id,
+                   n.disciplina_id, d.nome AS disciplina, n.valor,
+                   n.periodo, n.valor AS media,
+                   CASE WHEN n.valor < 6 THEN 'Reprovado' ELSE 'Aprovado' END AS status
+            FROM Nota n
+            INNER JOIN Aluno a ON a.id_aluno = n.aluno_id
+            INNER JOIN Disciplina d ON d.id = n.disciplina_id
+            ORDER BY a.nome, n.periodo, d.nome
+        `);
+        res.json(resultado);
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível consultar as notas.', detalhe: error.message });
+    }
+});
+
+app.post('/api/notas', async (req, res) => {
+    const { aluno_id, disciplina_id, valor, periodo } = req.body;
+    if (!aluno_id || !disciplina_id || valor === undefined) {
+        res.status(400).json({ erro: 'aluno_id, disciplina_id e valor são obrigatórios.' });
+        return;
+    }
+
+    try {
+        await databaseReady;
+        const resultado = await execute(
+            'INSERT INTO Nota (aluno_id, disciplina_id, valor, periodo) VALUES (?, ?, ?, ?)',
+            [aluno_id, disciplina_id, valor, periodo || null]
         );
+        await createRiskAlert(aluno_id);
+        res.status(201).json({ mensagem: 'Nota cadastrada com sucesso!', id: resultado.id });
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível salvar a nota.', detalhe: error.message });
+    }
+});
+
+app.get('/api/intervencoes', async (req, res) => {
+    try {
+        await databaseReady;
+        const resultado = await queryAll(`
+            SELECT i.id, i.data, a.nome AS aluno, i.descricao,
+                   p.nome AS responsavel, i.status, i.resultado_esperado
+            FROM Intervencao i
+            INNER JOIN Aluno a ON a.id_aluno = i.aluno_id
+            INNER JOIN Usuario u ON u.id = i.usuario_id
+            INNER JOIN Perfil p ON p.id = u.perfil_id
+            ORDER BY i.data DESC, i.id DESC
+        `);
+        res.json(resultado);
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível consultar as intervenções.', detalhe: error.message });
+    }
+});
+
+app.post('/api/intervencoes', async (req, res) => {
+    const { aluno_id, usuario_id, data, descricao, status, resultado_esperado } = req.body;
+    if (!aluno_id || !usuario_id || !data || !descricao) {
+        res.status(400).json({ erro: 'aluno_id, usuario_id, data e descricao são obrigatórios.' });
+        return;
     }
 
-    if (filtro && filtro !== 'todos') {
-        resultado = resultado.filter(a => a.status === filtro);
+    try {
+        await databaseReady;
+        const resultado = await execute(
+            `INSERT INTO Intervencao (aluno_id, usuario_id, data, descricao, status, resultado_esperado)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [aluno_id, usuario_id, data, descricao, status || 'planejada', resultado_esperado || null]
+        );
+        res.status(201).json({ mensagem: 'Intervenção registrada!', id: resultado.id });
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível salvar a intervenção.', detalhe: error.message });
+    }
+});
+
+app.get('/api/ocorrencias', async (req, res) => {
+    try {
+        await databaseReady;
+        const resultado = await queryAll(`
+            SELECT o.id, o.data, o.tipo, o.descricao,
+                   a.id_aluno AS aluno_id, a.nome AS aluno,
+                   u.id AS usuario_id, u.nome AS usuario
+            FROM Ocorrencia o
+            INNER JOIN Aluno a ON a.id_aluno = o.aluno_id
+            INNER JOIN Usuario u ON u.id = o.usuario_id
+            ORDER BY o.data DESC, o.id DESC
+        `);
+        res.json(resultado);
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível consultar as ocorrências.', detalhe: error.message });
+    }
+});
+
+app.post('/api/ocorrencias', async (req, res) => {
+    const { aluno_id, usuario_id, data, tipo, descricao } = req.body;
+    if (!aluno_id || !usuario_id || !data || !descricao) {
+        res.status(400).json({ erro: 'aluno_id, usuario_id, data e descricao são obrigatórios.' });
+        return;
     }
 
-    res.json(resultado);
+    try {
+        await databaseReady;
+        const resultado = await execute(
+            `INSERT INTO Ocorrencia (aluno_id, usuario_id, data, tipo, descricao)
+             VALUES (?, ?, ?, ?, ?)`,
+            [aluno_id, usuario_id, data, tipo || null, descricao]
+        );
+        res.status(201).json({ mensagem: 'Ocorrência registrada!', id: resultado.id });
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível salvar a ocorrência.', detalhe: error.message });
+    }
 });
 
-app.get('/api/alertas', (req, res) => {
-    res.json(alertas);
-});
-
-app.post('/api/frequencia', (req, res) => {
-    const registros = req.body;
-    res.status(201).json({ mensagem: 'Frequência registrada com sucesso!', dados: registros });
-});
-
-app.get('/api/notas', (req, res) => {
-    res.json(notas);
-});
-
-app.post('/api/notas', (req, res) => {
-    const novaNota = req.body;
-    notas.push(novaNota);
-    res.status(201).json({ mensagem: 'Nota cadastrada com sucesso!' });
-});
-
-app.get('/api/intervencoes', (req, res) => {
-    res.json(intervencoes);
-});
-
-app.post('/api/intervencoes', (req, res) => {
-    const novaIntervencao = req.body;
-    intervencoes.push(novaIntervencao);
-    res.status(201).json({ mensagem: 'Intervenção registrada!' });
-});
-
-app.get('/api/relatorios', (req, res) => {
+app.get('/api/relatorios', async (req, res) => {
     const { turma } = req.query;
-    let resultado = dadosRelatorio;
+    try {
+        await databaseReady;
+        const config = await getRiskConfig();
+        const alunos = await getAlunos({});
+        const notasBaixas = await queryAll(
+            'SELECT aluno_id, 1 AS total FROM Nota WHERE valor < ? GROUP BY aluno_id',
+            [config.minimumGrade]
+        );
+        const notasPorAluno = Object.fromEntries(notasBaixas.map(nota => [nota.aluno_id, nota.total]));
+        const grupos = new Map();
 
-    if (turma && turma !== 'todas') {
-        resultado = resultado.filter(d => d.turma === turma);
+        for (const aluno of alunos) {
+            if (turma && turma !== 'todas' && aluno.turma !== turma) continue;
+            const grupo = grupos.get(aluno.turma) || { turma: aluno.turma, total: 0, faltas: 0, somaMedias: 0, alunosComMedia: 0, notasBaixas: 0, risco: 0 };
+            grupo.total += 1;
+            grupo.faltas += aluno.faltas;
+            grupo.somaMedias += aluno.media;
+            grupo.alunosComMedia += aluno.media ? 1 : 0;
+            grupo.notasBaixas += notasPorAluno[aluno.id_aluno] || 0;
+            grupo.risco += aluno.status === 'ok' ? 0 : 1;
+            grupos.set(aluno.turma, grupo);
+        }
+
+        res.json([...grupos.values()].map(grupo => ({
+            turma: grupo.turma,
+            total: grupo.total,
+            faltas: grupo.faltas,
+            media: grupo.alunosComMedia ? Number((grupo.somaMedias / grupo.alunosComMedia).toFixed(2)) : 0,
+            notasBaixas: grupo.notasBaixas,
+            risco: grupo.risco
+        })));
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível gerar os relatórios.', detalhe: error.message });
     }
-
-    res.json(resultado);
 });
 
 const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+databaseReady.then(() => {
+    app.listen(PORT, () => {
+        console.log(`Servidor rodando em http://localhost:${PORT}`);
+    });
+}).catch(error => {
+    console.error('Falha ao inicializar o banco de dados:', error);
+    process.exitCode = 1;
 });
