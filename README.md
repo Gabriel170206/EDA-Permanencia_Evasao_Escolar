@@ -99,7 +99,7 @@ Este projeto foi desenvolvido como parte da **Atividade em Grupo – Trilha EDA/
 - Marcus Antônio
 - Ryan Corrêa 
 - Pedro Eduardo
-- IrisMendes
+- Iris Mendes
 
 **Orientação:** Thales
 
