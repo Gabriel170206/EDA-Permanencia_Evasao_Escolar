@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/styles.css">
     <title>SIMPE - Frequência</title>
 </head>
@@ -21,45 +23,14 @@
         <a href="alunos.html">👨‍🎓 Alunos</a>
     </div>
     <div class="card">
-        <h3>📋 INFO-01 - 09/09/2026</h3>
+        <h3>📋 Registro diário</h3>
         <table id="tabelaFrequencia">
-            <tr data-aluno-id="1" data-turma-id="1" data-data="2026-09-09">
+            <thead><tr>
                 <th>Matrícula</th>
                 <th>Aluno</th>
                 <th>Presença</th>
-            </tr>
-            <tr>
-                <td>2024001</td>
-                <td>João Silva</td>
-                <td><select>
-                    <option value="presente">Presente</option>
-                    <option value="falta" selected>Falta</option>
-                    </select></td>
-            </tr>
-            <tr data-aluno-id="2" data-turma-id="1" data-data="2026-09-09">
-                <td>2024002</td>
-                <td>Maria Santos</td>
-                <td><select>
-                    <option value="presente" selected>Presente</option>
-                    <option value="falta">Falta</option>
-                    </select></td>
-            </tr>
-            <tr data-aluno-id="3" data-turma-id="2" data-data="2026-09-09">
-                <td>2024003</td>
-                <td>Pedro Oliveira</td>
-                <td><select>
-                    <option value="presente" selected>Presente</option>
-                    <option value="falta">Falta</option>
-                    </select></td>
-            </tr>
-            <tr data-aluno-id="4" data-turma-id="1" data-data="2026-09-09">
-                <td>2024004</td>
-                <td>Ana Souza</td>
-                <td><select>
-                    <option value="presente" selected>Presente</option>
-                    <option value="falta">Falta</option>
-                    </select></td>
-            </tr>
+            </tr></thead>
+            <tbody><tr><td colspan="3">Carregando alunos...</td></tr></tbody>
         </table>
         <button id="salvarFrequencia" onclick="salvarFrequencia()"
             style="margin-top:10px;background:#1a237e;color:#fff;padding:8px 16px;border:none;border-radius:5px;cursor:pointer">💾
@@ -67,20 +38,7 @@
     </div>
     <div class="card">
         <h3>📊 Resumo</h3>
-        <table>
-            <tr>
-                <th>Total</th>
-                <th>Presentes</th>
-                <th>Faltas</th>
-                <th>%</th>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>3</td>
-                <td>2</td>
-                <td>60%</td>
-            </tr>
-        </table>
+        <p>Os indicadores serão recalculados após o lançamento.</p>
     </div>
     <script src="../js/app.js"></script>
 </body>

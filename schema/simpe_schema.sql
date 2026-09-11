@@ -181,4 +181,5 @@ INSERT INTO Alerta (aluno_id, data_geracao, motivo, lido) VALUES
 
 INSERT INTO Configuracao_Risco (parametro, valor, descricao) VALUES
   ('limite_faltas_consecutivas', 5.0, 'Limite de faltas consecutivas para alerta'),
-  ('nota_minima', 6.0, 'Nota mínima considerada para risco pedagógico');
+  ('nota_minima', 6.0, 'Nota mínima considerada para risco pedagógico'),
+  ('frequencia_minima', 75.0, 'Percentual mínimo de frequência para risco');

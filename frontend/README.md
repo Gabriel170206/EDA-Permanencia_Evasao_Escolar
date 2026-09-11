@@ -2,6 +2,8 @@
 
 Este diretório concentra a interface web do projeto SIMPE.
 
+**Responsável:** Gabriel Rodrigues.
+
 ## Tecnologia usada
 
 A interface foi implementada com HTML, CSS e JavaScript puro, sem framework, utilizando arquivos estáticos.
@@ -41,6 +43,26 @@ Depois, abra no navegador:
 ```text
 http://127.0.0.1:8000/html/index.html
 ```
+
+O backend deve estar rodando em outro terminal na porta `3000`:
+
+```bash
+cd ../backend
+npm install
+node server.js
+```
+
+O JavaScript do frontend consome a API em `http://localhost:3000/api`. Iniciar apenas o servidor HTTP permite abrir as páginas, mas não carregar os dados do banco.
+
+## Fluxos disponíveis
+
+- `index.html`: indicadores e alunos em risco;
+- `alunos.html`: busca, filtro e cadastro de alunos;
+- `alertas.html`: consulta e conclusão de alertas;
+- `frequencia.html`: lançamento diário de presença e falta;
+- `notas.html`: lançamento e consulta de notas;
+- `intervencoes.html`: registro e consulta de intervenções;
+- `relatorios.html`: relatório por turma e exportação.
 
 ## Telas implementadas
 

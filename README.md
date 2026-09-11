@@ -37,6 +37,8 @@ EDA-Permanencia_Evasao/
 │   └── (diagramas em formato .png, .drawio, etc.)
 ├── docs/                     # Documentação geral do projeto
 │   └── (documentos, manuais, atividades)
+├── Equipe/                   # Integrantes do projeto
+│   └── README.md
 ├── outputs/                  # Resultados gerados pelas análises
 │   └── (relatórios, gráficos, tabelas, etc.)
 ├── src/                      # Código-fonte principal do projeto
@@ -48,19 +50,61 @@ EDA-Permanencia_Evasao/
 
 ---
 
-## 3. Certifique-se de ter instalado em seu ambiente local:
+## 3. Como executar o sistema
 
+### Requisitos
 
-### Passo a Passo para Inicialização
+- Linux Mint ou outro sistema compatível com Node.js;
+- Node.js 22 LTS;
+- npm;
+- Python 3 para servir os arquivos estáticos do frontend.
 
-#### 1. Clonar o Repositório e Configurar o Banco de Dados
+O banco usado pelo projeto é SQLite. O backend utiliza `data/db/simpe.db` e cria o schema inicial quando necessário.
+
+### Terminal 1: backend
 
 ```bash
-* Abra sua pasta local onde trabalará com o projeto
-* Abra o teminal e entre no diretório da pasta onde trabalhará com o projeto
-* Execute o comando abaixo para clonar o projeto inteiro de "SIMPE — Sistema Inteligente de Monitoramento da Permanência Escolar":
-git clone https://github.com/seu-usuario/simpe.git
+cd "/seu/caminho/diretório/para/EDA-Permanencia_Evasao_Escolar/backend"
+npm install
+node server.js
+```
 
+A API fica disponível em `http://localhost:3000`.
+
+### Terminal 2: frontend
+
+```bash
+cd "/seu/caminho/diretório/para/EDA-Permanencia_Evasao_Escolar/frontend"
+python3 -m http.server 8000
+```
+
+Abra `http://localhost:8000/html/index.html`. A porta `3000` serve a API; a porta `8000` serve as páginas.
+
+### Fluxo e verificação
+
+O frontend HTML/CSS/JavaScript envia requisições para `http://localhost:3000/api`. O backend aplica as regras, acessa o SQLite e devolve os dados para dashboard, alunos, alertas, frequência, notas, intervenções e relatórios.
+
+Com o backend ligado, estes endereços devem retornar JSON:
+
+```text
+http://localhost:3000/api/alunos
+http://localhost:3000/api/dashboard
+http://localhost:3000/api/relatorios
+```
+
+O SQLite Viewer pode confirmar os registros nas tabelas `Aluno`, `Frequencia`, `Nota`, `Intervencao` e `Alerta`.
+
+### Solução de problemas
+
+Se o `sqlite3` apresentar erro de binding nativo, use Node 22 e reinstale as dependências:
+
+```bash
+nvm install 22
+nvm use 22
+cd "/seu/caminho/diretório/para/EDA-Permanencia_Evasao_Escolar/backend"
+rm -rf node_modules package-lock.json
+npm install
+node server.js
 ```
 
 ## 4. Como Contribuir
@@ -99,7 +143,7 @@ Este projeto foi desenvolvido como parte da **Atividade em Grupo – Trilha EDA/
 - Marcus Antônio
 - Ryan Corrêa 
 - Pedro Eduardo
-- Iris Mendes
+- Irislene Mendes
 
 **Orientação:** Thales
 

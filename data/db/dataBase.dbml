@@ -1,5 +1,5 @@
 Project SIMPE {
-  database_type: 'PostgreSQL'
+  database_type: 'SQLite'
   Note: 'Sistema Inteligente de Monitoramento da Permanência Escolar[cite: 3]'
 }
 

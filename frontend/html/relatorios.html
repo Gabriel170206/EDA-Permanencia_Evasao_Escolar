@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/styles.css">
     <title>SIMPE - Relatórios</title>
 </head>
@@ -26,11 +28,6 @@
         <h3>🔍 Filtrar Relatório</h3>
         <select id="filtroTurma" onchange="exibirRelatorio()">
             <option value="todas">Todas as Turmas</option>
-            <option value="INFO-01">INFO-01</option>
-            <option value="INFO-02">INFO-02</option>
-            <option value="ADM-01">ADM-01</option>
-            <option value="ADM-02">ADM-02</option>
-            <option value="ELET-01">ELET-01</option>
         </select>
     </div>
 
@@ -58,8 +55,8 @@
     </div>
 
     <div class="card">
-        <button class="btn" onclick="alert('PDF exportado (simulação)')">📥 Exportar PDF</button>
-        <button class="btn" onclick="alert('CSV exportado (simulação)')">📥 Exportar CSV</button>
+        <button class="btn" onclick="window.print()">📥 Exportar PDF</button>
+        <button class="btn" onclick="exportarCSV()">📥 Exportar CSV</button>
     </div>
 
     <script src="../js/app.js"></script>

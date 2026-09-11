@@ -1,7 +1,8 @@
 body {
-    font-family: Arial;
+    font-family: Arial, sans-serif;
     background: #f0f4f8;
     padding: 20px;
+    margin: 0;
 }
 
 .header {
@@ -23,6 +24,8 @@ body {
     text-decoration: none;
     margin: 0 10px;
     font-weight: bold;
+    display: inline-block;
+    padding: 6px 0;
 }
 
 .card {
@@ -96,6 +99,27 @@ select {
     margin: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+    align-items: center;
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid button {
+    width: 100%;
+    margin: 0;
+}
+
+.alert-critical button,
+.alert-warning button {
+    margin: 8px 0 0;
 }
 
 button {
@@ -115,4 +139,22 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+@media (max-width: 640px) {
+    body {
+        padding: 10px;
+    }
+
+    .menu a {
+        margin: 0 6px 0 0;
+    }
+
+    .card {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 580px;
+    }
 }

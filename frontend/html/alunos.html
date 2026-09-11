@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/styles.css">
     <title>SIMPE - Alunos</title>
 </head>
@@ -22,6 +24,16 @@
         <a href="alunos.html">👨‍🎓 Alunos</a>
     </div>
 
+    <div class="card">
+        <h3>➕ Cadastrar aluno</h3>
+        <form id="formAluno" class="form-grid">
+            <input name="nome" placeholder="Nome completo" required>
+            <input name="matricula" placeholder="Matrícula" required>
+            <select name="turma_id" id="turma_id" required></select>
+            <select name="responsavel_id" id="responsavel_id" required></select>
+            <button type="submit">Salvar aluno</button>
+        </form>
+    </div>
     <div class="card">
         <h3>🔍 Buscar Aluno</h3>
         <input type="text" id="busca" placeholder="Digite nome ou matrícula..." onkeyup="filtrarAlunos()">

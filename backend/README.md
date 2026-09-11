@@ -3,7 +3,7 @@
 ## 1. Visão Geral
 O módulo de Backend (v1.0.0) atua como o núcleo lógico do sistema, fornecendo uma API RESTful para comunicação com o front-end. Ele é responsável por processar requisições, aplicar regras de negócio e fornecer os dados necessários para as interfaces de painéis, relatórios e gestão de alunos.
 
-* **Equipe Responsável:** Ryan Corrêa e Marcus Antônio
+* **Equipe Responsável:** Marcus Antônio (backend); Gabriel Rodrigues e Ryan Corrêa (banco de dados)
 * **Status Atual:** Protótipo funcional com persistência SQLite e regras de risco.
 
 ## 2. Tecnologias e Dependências
@@ -31,17 +31,21 @@ A API responde no prefixo `/api` e padroniza a troca de informações no formato
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/dashboard` | Retorna os KPIs principais (alunos em risco, frequência média, alertas de hoje, taxa de evasão). | - |
 | `GET` | `/api/relatorios` | Retorna estatísticas consolidadas por turma. | `turma` (Opcional: filtra por turma específica). |
+| `GET` | `/api/relatorios.csv` | Exporta dados consolidados em CSV. | `turma` (Opcional). |
+| `GET` | `/api/opcoes` | Retorna turmas, disciplinas, usuários e responsáveis para os formulários. | - |
 
 ### 🎓 Gestão de Alunos
 | Método | Endpoint | Descrição | Parâmetros (Query) |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/alunos` | Lista alunos matriculados. | `busca` (nome ou matrícula), `filtro` (status do risco). |
 | `POST` | `/api/alunos` | Salva um aluno no SQLite e retorna o registro criado. | Corpo: `nome`, `matricula`, `turma_id`, `responsavel_id`. |
+| `PATCH` | `/api/alunos/:id` | Atualiza os dados de um aluno. | Corpo: `nome`, `matricula`, `turma_id`, `responsavel_id`. |
 
 ### ⚠️ Alertas e Frequência
 | Método | Endpoint | Descrição | Corpo da Requisição (Body) |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/alertas` | Lista os alertas de evasão ou risco. | - |
+| `PATCH` | `/api/alertas/:id` | Marca um alerta como concluído. | - |
 | `POST` | `/api/frequencia` | Registra a lista de chamada/frequência. | Array de presença/falta. |
 | `GET` | `/api/ocorrencias` | Lista ocorrências disciplinares registradas. | - |
 | `POST` | `/api/ocorrencias` | Registra uma ocorrência vinculada a aluno e usuário. | Corpo: `aluno_id`, `usuario_id`, `data`, `descricao`. |
@@ -57,6 +61,13 @@ A API responde no prefixo `/api` e padroniza a troca de informações no formato
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/intervencoes` | Lista as ações corretivas/preventivas realizadas. | - |
 | `POST` | `/api/intervencoes` | Registra uma nova intervenção. | Objeto com dados do aluno, descrição, responsável e data. |
+
+### Configuração de risco
+
+| Método | Endpoint | Descrição |
+| :--- | :--- | :--- |
+| `GET` | `/api/configuracao-risco` | Consulta os parâmetros de risco. |
+| `PATCH` | `/api/configuracao-risco` | Atualiza o limite de faltas, a nota mínima ou a frequência mínima. |
 
 ### Regras de risco
 
@@ -87,3 +98,9 @@ curl "http://localhost:3000/api/alunos?busca=TESTE001"
 2. Na raiz da pasta `backend`, instale as dependências:
    ```bash
    npm install
+   node server.js
+   ```
+
+O frontend deve ser iniciado em outro terminal com `python3 -m http.server 8000` dentro da pasta `frontend`. Depois, abra `http://localhost:8000/html/index.html`.
+
+O servidor do backend não exibe uma página na rota `/`; sua finalidade é fornecer a API em `/api`.

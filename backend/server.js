@@ -22,7 +22,11 @@ const databaseReady = new Promise((resolve, reject) => {
             }
 
             if (table) {
-                resolve();
+                database.run(
+                    `INSERT OR IGNORE INTO Configuracao_Risco (parametro, valor, descricao)
+                     VALUES ('frequencia_minima', 75.0, 'Percentual mínimo de frequência para risco')`,
+                    migrationError => migrationError ? reject(migrationError) : resolve()
+                );
                 return;
             }
 
@@ -143,6 +147,10 @@ function execute(sql, params = []) {
     });
 }
 
+function csvValue(value) {
+    return `"${String(value ?? '').replace(/"/g, '""')}"`;
+}
+
 async function createRiskAlert(alunoId) {
     const config = await getRiskConfig();
     const risk = await getAlunoRisk(alunoId, config);
@@ -185,6 +193,21 @@ function createAluno(aluno) {
 
 app.use(cors());
 app.use(express.json());
+
+app.get('/api/opcoes', async (req, res) => {
+    try {
+        await databaseReady;
+        const [turmas, disciplinas, usuarios, responsaveis] = await Promise.all([
+            queryAll('SELECT id, nome FROM Turma ORDER BY nome'),
+            queryAll('SELECT id, nome FROM Disciplina ORDER BY nome'),
+            queryAll('SELECT id, nome FROM Usuario ORDER BY nome'),
+            queryAll('SELECT id, nome FROM Responsavel ORDER BY nome')
+        ]);
+        res.json({ turmas, disciplinas, usuarios, responsaveis });
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível carregar as opções.', detalhe: error.message });
+    }
+});
 
 // ==========================================
 // DADOS SIMULADOS (MOCK)
@@ -248,7 +271,9 @@ app.get('/api/dashboard', async (req, res) => {
             alunosEmRisco,
             frequenciaMedia: `${frequenciaMedia}%`,
             alertasHoje: alertasHoje.length,
-            taxaEvasao: `${taxaEvasao}%`
+            taxaEvasao: `${taxaEvasao}%`,
+            alunosRisco: alunos.filter(aluno => aluno.status !== 'ok').slice(0, 10),
+            evolucao: []
         });
     } catch (error) {
         res.status(500).json({ erro: 'Não foi possível carregar o dashboard.', detalhe: error.message });
@@ -283,6 +308,28 @@ app.post('/api/alunos', async (req, res) => {
     }
 });
 
+app.patch('/api/alunos/:id', async (req, res) => {
+    const { nome, matricula, turma_id, responsavel_id } = req.body;
+    if (!nome || !matricula || !turma_id || !responsavel_id) {
+        res.status(400).json({ erro: 'nome, matricula, turma_id e responsavel_id são obrigatórios.' });
+        return;
+    }
+    try {
+        await databaseReady;
+        const resultado = await execute(
+            'UPDATE Aluno SET nome = ?, matricula = ?, turma_id = ?, responsavel_id = ? WHERE id_aluno = ?',
+            [nome, matricula, turma_id, responsavel_id, req.params.id]
+        );
+        if (!resultado.changes) {
+            res.status(404).json({ erro: 'Aluno não encontrado.' });
+            return;
+        }
+        res.json((await getAlunos({})).find(aluno => String(aluno.id_aluno) === String(req.params.id)));
+    } catch (error) {
+        res.status(409).json({ erro: 'Não foi possível atualizar o aluno.', detalhe: error.message });
+    }
+});
+
 app.get('/api/alertas', async (req, res) => {
     try {
         await databaseReady;
@@ -298,6 +345,20 @@ app.get('/api/alertas', async (req, res) => {
         res.json(resultado.map(alerta => ({ ...alerta, nivel: 'crítico' })));
     } catch (error) {
         res.status(500).json({ erro: 'Não foi possível consultar os alertas.', detalhe: error.message });
+    }
+});
+
+app.patch('/api/alertas/:id', async (req, res) => {
+    try {
+        await databaseReady;
+        const resultado = await execute('UPDATE Alerta SET lido = 1 WHERE id = ?', [req.params.id]);
+        if (!resultado.changes) {
+            res.status(404).json({ erro: 'Alerta não encontrado.' });
+            return;
+        }
+        res.json({ mensagem: 'Alerta marcado como concluído.' });
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível atualizar o alerta.', detalhe: error.message });
     }
 });
 
@@ -423,6 +484,33 @@ app.post('/api/intervencoes', async (req, res) => {
     }
 });
 
+app.get('/api/configuracao-risco', async (req, res) => {
+    try {
+        await databaseReady;
+        res.json(await queryAll('SELECT parametro, valor, descricao FROM Configuracao_Risco ORDER BY parametro'));
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível consultar a configuração de risco.', detalhe: error.message });
+    }
+});
+
+app.patch('/api/configuracao-risco', async (req, res) => {
+    const permitidas = ['limite_faltas_consecutivas', 'nota_minima', 'frequencia_minima'];
+    const parametros = permitidas.filter(parametro => req.body?.[parametro] !== undefined);
+    if (!parametros.length || parametros.some(parametro => !Number.isFinite(Number(req.body[parametro])) || Number(req.body[parametro]) < 0)) {
+        res.status(400).json({ erro: 'Informe parâmetros de risco numéricos válidos.' });
+        return;
+    }
+    try {
+        await databaseReady;
+        for (const parametro of parametros) {
+            await execute('UPDATE Configuracao_Risco SET valor = ? WHERE parametro = ?', [Number(req.body[parametro]), parametro]);
+        }
+        res.json(await queryAll('SELECT parametro, valor, descricao FROM Configuracao_Risco ORDER BY parametro'));
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível atualizar a configuração de risco.', detalhe: error.message });
+    }
+});
+
 app.get('/api/ocorrencias', async (req, res) => {
     try {
         await databaseReady;
@@ -496,6 +584,28 @@ app.get('/api/relatorios', async (req, res) => {
         })));
     } catch (error) {
         res.status(500).json({ erro: 'Não foi possível gerar os relatórios.', detalhe: error.message });
+    }
+});
+
+app.get('/api/relatorios.csv', async (req, res) => {
+    try {
+        await databaseReady;
+        const relatorios = await queryAll(`
+            SELECT t.nome AS turma, COUNT(DISTINCT a.id_aluno) AS total,
+                   COALESCE(SUM(CASE WHEN f.presente = 0 THEN 1 ELSE 0 END), 0) AS faltas
+            FROM Turma t
+            LEFT JOIN Aluno a ON a.turma_id = t.id
+            LEFT JOIN Frequencia f ON f.id_aluno = a.id_aluno
+            WHERE ? = 'todas' OR t.nome = ?
+            GROUP BY t.id, t.nome ORDER BY t.nome
+        `, [req.query.turma || 'todas', req.query.turma || 'todas']);
+        const linhas = [
+            ['Turma', 'Total de alunos', 'Total de faltas'],
+            ...relatorios.map(relatorio => [relatorio.turma, relatorio.total, relatorio.faltas])
+        ];
+        res.attachment('relatorio-simpe.csv').type('text/csv').send(`\ufeff${linhas.map(linha => linha.map(csvValue).join(';')).join('\n')}`);
+    } catch (error) {
+        res.status(500).json({ erro: 'Não foi possível exportar o relatório.', detalhe: error.message });
     }
 });
 

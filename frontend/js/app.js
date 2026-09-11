@@ -20,6 +20,149 @@ async function carregarDashboard() {
     }
 }
 
+async function api(path, options = {}) {
+    const resposta = await fetch(`${API_URL}${path}`, {
+        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+        ...options
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Não foi possível concluir a operação.');
+    return dados;
+}
+
+function preencherSelect(select, itens, placeholder) {
+    if (!select) return;
+    select.innerHTML = `<option value="">${placeholder}</option>${itens.map(item => `<option value="${item.id}">${item.nome}</option>`).join('')}`;
+}
+
+async function carregarOpcoes() {
+    const opcoes = await api('/opcoes');
+    preencherSelect(document.getElementById('turma_id'), opcoes.turmas, 'Selecione a turma');
+    preencherSelect(document.getElementById('responsavel_id'), opcoes.responsaveis, 'Selecione o responsável');
+    preencherSelect(document.getElementById('disciplina_id'), opcoes.disciplinas, 'Selecione a disciplina');
+    preencherSelect(document.getElementById('aluno_id'), opcoes.usuarios ? [] : [], 'Selecione o aluno');
+    const alunos = await api('/alunos');
+    preencherSelect(document.getElementById('aluno_id'), alunos, 'Selecione o aluno');
+    preencherSelect(document.getElementById('usuario_id'), opcoes.usuarios, 'Selecione o responsável');
+    const filtroTurma = document.getElementById('filtroTurma');
+    if (filtroTurma) {
+        filtroTurma.innerHTML = '<option value="todas">Todas as turmas</option>' + opcoes.turmas.map(turma => `<option value="${turma.nome}">${turma.nome}</option>`).join('');
+    }
+}
+
+async function carregarDashboard() {
+    try {
+        const dados = await api('/dashboard');
+        const cards = document.querySelectorAll('#cardsDashboard h2');
+        if (cards.length >= 4) {
+            cards[0].textContent = dados.alunosEmRisco;
+            cards[1].textContent = dados.frequenciaMedia;
+            cards[2].textContent = dados.alertasHoje;
+            cards[3].textContent = dados.taxaEvasao;
+        }
+        const risco = document.getElementById('alunosRiscoDashboard');
+        if (risco) risco.innerHTML = dados.alunosRisco.map(aluno => `<tr><td>${aluno.nome}</td><td>${aluno.turma}</td><td>${aluno.faltas}</td><td>${aluno.status}</td></tr>`).join('') || '<tr><td colspan="4">Nenhum aluno em risco.</td></tr>';
+    } catch (erro) { console.error(erro); }
+}
+
+async function buscarAlunos() {
+    try {
+        const busca = document.getElementById('busca')?.value || '';
+        const filtro = document.getElementById('filtroRisco')?.value || 'todos';
+        const alunos = await api(`/alunos?busca=${encodeURIComponent(busca)}&filtro=${encodeURIComponent(filtro)}`);
+        const tbody = document.getElementById('corpoTabela');
+        if (tbody) tbody.innerHTML = alunos.map(aluno => `<tr><td>${aluno.matricula}</td><td>${aluno.nome}</td><td>${aluno.turma}</td><td>${aluno.faltas}</td><td>${aluno.media}</td><td>${aluno.status}</td></tr>`).join('') || '<tr><td colspan="6">Nenhum aluno encontrado.</td></tr>';
+        const titulo = document.getElementById('tituloLista');
+        if (titulo) titulo.textContent = `Lista de Alunos (${alunos.length})`;
+    } catch (erro) { console.error(erro); }
+}
+
+async function carregarAlertas() {
+    try {
+        const alertas = await api('/alertas');
+        const lista = document.getElementById('listaAlertas');
+        if (lista) lista.innerHTML = alertas.map(alerta => `<div class="${alerta.nivel === 'atenção' ? 'alert-warning' : 'alert-critical'}"><strong>${alerta.nivel}</strong>: ${alerta.aluno} - ${alerta.motivo}<br><small>${alerta.data} | ${alerta.turma}</small><button onclick="concluirAlerta(${alerta.id})">Concluir</button></div>`).join('') || '<p>Nenhum alerta encontrado.</p>';
+        const historico = document.querySelector('#historicoAlertas tbody');
+        if (historico) historico.innerHTML = alertas.map(alerta => `<tr><td>${alerta.data}</td><td>${alerta.aluno}</td><td>${alerta.motivo}</td><td>${alerta.status}</td></tr>`).join('');
+    } catch (erro) { console.error(erro); }
+}
+
+async function carregarNotas() {
+    try {
+        const notas = await api('/notas');
+        const tabela = document.querySelector('#tabelaNotas tbody');
+        if (tabela) tabela.innerHTML = notas.map(nota => `<tr><td>${nota.aluno}</td><td>${nota.disciplina}</td><td>${nota.valor}</td><td>${nota.periodo || '-'}</td><td>${nota.status}</td></tr>`).join('') || '<tr><td colspan="5">Nenhuma nota encontrada.</td></tr>';
+    } catch (erro) { console.error(erro); }
+}
+
+async function carregarIntervencoes() {
+    try {
+        const intervencoes = await api('/intervencoes');
+        const tabela = document.querySelector('#tabelaIntervencoes tbody');
+        if (tabela) tabela.innerHTML = intervencoes.map(intervencao => `<tr><td>${intervencao.data}</td><td>${intervencao.aluno}</td><td>${intervencao.descricao}</td><td>${intervencao.responsavel}</td><td>${intervencao.status}</td></tr>`).join('') || '<tr><td colspan="5">Nenhuma intervenção encontrada.</td></tr>';
+    } catch (erro) { console.error(erro); }
+}
+
+async function salvarFrequencia() {
+    const registros = [...document.querySelectorAll('#tabelaFrequencia tbody tr[data-aluno-id]')].map(linha => ({
+        id_aluno: Number(linha.dataset.alunoId), id_turma: Number(linha.dataset.turmaId), data: linha.dataset.data, presente: linha.querySelector('select').value === 'presente'
+    }));
+    try { await api('/frequencia', { method: 'POST', body: JSON.stringify(registros) }); alert('Frequência registrada.'); }
+    catch (erro) { const pendentes = JSON.parse(localStorage.getItem('simpe-frequencias') || '[]'); localStorage.setItem('simpe-frequencias', JSON.stringify([...pendentes, ...registros])); alert('Sem conexão. Dados guardados para sincronização.'); }
+}
+
+async function sincronizarFrequencias() {
+    const pendentes = JSON.parse(localStorage.getItem('simpe-frequencias') || '[]');
+    if (!pendentes.length) return;
+    try { await api('/frequencia', { method: 'POST', body: JSON.stringify(pendentes) }); localStorage.removeItem('simpe-frequencias'); } catch (erro) { console.error(erro); }
+}
+window.salvarFrequencia = salvarFrequencia;
+window.addEventListener('online', sincronizarFrequencias);
+
+async function carregarFrequencia() {
+    try {
+        const alunos = await api('/alunos');
+        const data = new Date().toISOString().slice(0, 10);
+        document.querySelector('#tabelaFrequencia tbody').innerHTML = alunos.map(aluno => `<tr data-aluno-id="${aluno.id_aluno}" data-turma-id="${aluno.turma_id}" data-data="${data}"><td>${aluno.matricula}</td><td>${aluno.nome}</td><td><select><option value="presente">Presente</option><option value="falta">Falta</option></select></td></tr>`).join('');
+    } catch (erro) { console.error(erro); }
+}
+
+async function exibirRelatorio() {
+    try {
+        const filtro = document.getElementById('filtroTurma')?.value || 'todas';
+        const dados = await api(`/relatorios?turma=${encodeURIComponent(filtro)}`);
+        document.getElementById('corpoRelatorio').innerHTML = dados.map(item => `<tr><td>${item.turma}</td><td>${item.total}</td><td>${item.faltas}</td><td>${item.media}</td><td>${item.notasBaixas}</td><td>${item.risco}</td><td>${item.risco >= 4 ? 'Alto' : item.risco >= 2 ? 'Médio' : 'Baixo'}</td></tr>`).join('') || '<tr><td colspan="7">Nenhum dado encontrado.</td></tr>';
+    } catch (erro) { console.error(erro); }
+}
+function exportarCSV() { const filtro = document.getElementById('filtroTurma')?.value || 'todas'; window.location.href = `${API_URL}/relatorios.csv?turma=${encodeURIComponent(filtro)}`; }
+window.exibirRelatorio = exibirRelatorio;
+window.exportarCSV = exportarCSV;
+
+async function enviarFormulario(id, endpoint, mensagem) {
+    const formulario = document.getElementById(id);
+    if (!formulario) return;
+    formulario.addEventListener('submit', async evento => {
+        evento.preventDefault();
+        try { await api(endpoint, { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(formulario))) }); formulario.reset(); alert(mensagem); location.reload(); }
+        catch (erro) { alert(erro.message); }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try { await carregarOpcoes(); } catch (erro) { console.error(erro); }
+    if (document.getElementById('cardsDashboard')) carregarDashboard();
+    if (document.getElementById('corpoTabela')) buscarAlunos();
+    if (document.getElementById('listaAlertas')) carregarAlertas();
+    if (document.getElementById('tabelaNotas')) carregarNotas();
+    if (document.getElementById('tabelaIntervencoes')) carregarIntervencoes();
+    if (document.getElementById('tabelaFrequencia')) carregarFrequencia();
+    if (document.getElementById('corpoRelatorio')) exibirRelatorio();
+    enviarFormulario('formAluno', '/alunos', 'Aluno cadastrado.');
+    enviarFormulario('formNota', '/notas', 'Nota cadastrada.');
+    enviarFormulario('formIntervencao', '/intervencoes', 'Intervenção registrada.');
+    sincronizarFrequencias();
+});
+
 // ==========================================
 // 2. ALUNOS (alunos.html)
 // ==========================================

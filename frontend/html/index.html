@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/styles.css">
     <title>SIMPE - Dashboard</title>
 </head>
@@ -20,76 +22,27 @@
         <a href="intervencoes.html">🤝 Intervenções</a>
         <a href="alunos.html">👨‍🎓 Alunos</a>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div id="cardsDashboard" style="display:flex;gap:10px;flex-wrap:wrap">
         <div class="card" style="flex:1">
             <h3>📌 Alunos em Risco</h3>
-            <h2 class="red">12</h2>
+            <h2 class="red">--</h2>
         </div>
         <div class="card" style="flex:1">
             <h3>✅ Frequência Média</h3>
-            <h2 class="green">87%</h2>
+            <h2 class="green">--</h2>
         </div>
         <div class="card" style="flex:1">
             <h3>⚠️ Alertas Hoje</h3>
-            <h2 class="red">3</h2>
+            <h2 class="red">--</h2>
         </div>
         <div class="card" style="flex:1">
             <h3>📈 Taxa de Evasão</h3>
-            <h2>8.5%</h2>
+            <h2>--</h2>
         </div>
     </div>
-    <div class="alert"><strong>🚨 NOVO ALERTA:</strong> João Silva - 5 faltas consecutivas</div>
     <div class="card">
         <h3>📋 Alunos em Risco</h3>
-        <table>
-            <tr>
-                <th>Nome</th>
-                <th>Turma</th>
-                <th>Faltas</th>
-                <th>Status</th>
-            </tr>
-            <tr>
-                <td>João Silva</td>
-                <td>INFO-01</td>
-                <td>8</td>
-                <td class="red">⚠️ Crítico</td>
-            </tr>
-            <tr>
-                <td>Maria Oliveira</td>
-                <td>INFO-02</td>
-                <td>6</td>
-                <td class="red">⚠️ Crítico</td>
-            </tr>
-            <tr>
-                <td>Carlos Souza</td>
-                <td>INFO-01</td>
-                <td>4</td>
-                <td class="green">🔍 Atenção</td>
-            </tr>
-        </table>
-    </div>
-    <div class="card">
-        <h3>📊 Relatório Mensal</h3>
-        <table>
-            <tr>
-                <th>Turma</th>
-                <th>Faltas</th>
-                <th>Notas Baixas</th>
-                <th>Em Risco</th>
-            </tr>
-            <tr>
-                <td>INFO-01</td>
-                <td>45</td>
-                <td>8</td>
-                <td>5</td>
-            </tr>
-            <tr>
-                <td>INFO-02</td>
-                <td>38</td>
-                <td>6</td>
-                <td>3</td>
-            </tr>
-        </table>
+        <table><thead><tr><th>Nome</th><th>Turma</th><th>Faltas</th><th>Status</th></tr></thead><tbody id="alunosRiscoDashboard"></tbody></table>
     </div>
     <script src="../js/app.js"></script>
 </body>

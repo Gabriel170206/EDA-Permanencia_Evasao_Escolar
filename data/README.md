@@ -7,7 +7,7 @@ Esta pasta reúne os artefatos de dados do SIMPE (Sistema Inteligente de Monitor
 | Arquivo | Tipo | Finalidade |
 | --- | --- | --- |
 | `dataBase.dbdiagram` | JSON de projeto do dbdiagram.io | Armazena a configuração visual do diagrama, a posição das tabelas e os caminhos dos relacionamentos. Não é o script de criação do banco. |
-| `dataBase.dbml` | DBML | Define o modelo lógico do projeto, com 13 tabelas, campos, chaves, referências e anotações. Declara o tipo de banco como PostgreSQL. |
+| `dataBase.dbml` | DBML | Define o modelo lógico do projeto, com 13 tabelas, campos, chaves, referências e anotações. Declara o tipo de banco como SQLite. |
 | `simpe_sqlite.sql` | SQL | Script executável para SQLite. Ativa chaves estrangeiras, recria as tabelas, aplica validações e insere dados de referência e exemplos. |
 | `simpe.db` | Banco SQLite | Arquivo binário do banco materializado. Possui 77.824 bytes na última verificação. A inspeção detalhada de seu conteúdo depende de um cliente SQLite. |
 
@@ -68,10 +68,11 @@ O carregamento de exemplo insere 4 perfis, 4 usuários, 3 responsáveis, 2 curso
 
 ## Observações de consistência
 
-- `dataBase.dbml` informa `PostgreSQL`, mas `simpe_sqlite.sql` e `simpe.db` representam a implementação SQLite. O tipo de banco deve ser padronizado antes de uma implantação definitiva.
+- `dataBase.dbml`, `simpe_sqlite.sql` e `simpe.db` representam a implementação SQLite usada pelo backend.
+- O arquivo `data/db/simpe.db` é a base utilizada em execução; o script `simpe_sqlite.sql` serve para recriação e carga de uma base de referência.
 - O SQLite exige alguns relacionamentos como obrigatórios (`Usuario.perfil_id`, `Turma.curso_id`, `Aluno.turma_id`, `Aluno.responsavel_id` e outros), enquanto o DBML deixa parte deles opcional. O modelo lógico e o script devem ser alinhados para evitar comportamentos diferentes entre ambientes.
 - `dataBase.dbdiagram` é um arquivo de configuração do diagrama e não substitui o DBML nem o script SQL.
 
-## Integrante requisitado
+## Responsáveis pelo banco de dados
 
-Ryan Corrêa
+Gabriel Rodrigues e Ryan Corrêa.

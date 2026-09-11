@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/styles.css">
     <title>SIMPE - Notas</title>
 </head>
@@ -21,15 +23,25 @@
         <a href="alunos.html">👨‍🎓 Alunos</a>
     </div>
     <div class="card">
+        <h3>➕ Lançar nota</h3>
+        <form id="formNota" class="form-grid">
+            <select name="aluno_id" id="aluno_id" required></select>
+            <select name="disciplina_id" id="disciplina_id" required></select>
+            <input name="valor" type="number" min="0" max="10" step="0.1" placeholder="Nota" required>
+            <input name="periodo" placeholder="Período">
+            <button type="submit">Salvar nota</button>
+        </form>
+    </div>
+    <div class="card">
         <h3>📋 INFO-01 - Redes</h3>
         <table id="tabelaNotas">
-            <tr>
+            <thead><tr>
                 <th>Aluno</th>
-                <th>Nota</th>
+                <th>Disciplina</th><th>Nota</th>
                 <th>Período</th>
                 <th>Média</th>
                 <th>Status</th>
-            </tr>
+            </tr></thead>
             <tbody></tbody>
         </table>
     </div>

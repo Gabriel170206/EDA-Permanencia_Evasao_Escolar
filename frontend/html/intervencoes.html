@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/styles.css">
     <title>SIMPE - Intervenções</title>
 </head>
@@ -19,6 +21,18 @@
         <a href="notas.html">📝 Notas</a>
         <a href="intervencoes.html">🤝 Intervenções</a>
         <a href="alunos.html">👨‍🎓 Alunos</a>
+    </div>
+    <div class="card">
+        <h3>➕ Registrar intervenção</h3>
+        <form id="formIntervencao" class="form-grid">
+            <select name="aluno_id" id="aluno_id" required></select>
+            <select name="usuario_id" id="usuario_id" required></select>
+            <input name="data" type="date" required>
+            <input name="descricao" placeholder="Descrição da intervenção" required>
+            <select name="status"><option value="planejada">Planejada</option><option value="em andamento">Em andamento</option><option value="concluída">Concluída</option></select>
+            <input name="resultado_esperado" placeholder="Resultado esperado">
+            <button type="submit">Salvar intervenção</button>
+        </form>
     </div>
     <div class="card">
         <h3>📋 Histórico</h3>
